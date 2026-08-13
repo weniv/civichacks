@@ -1,0 +1,1670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>우리는, 시빅해커 — AI로 사회문제를 해결하는 해커톤</title>
+<meta name="description" content="반나절 안에 사회문제 하나를 골라 요구사항.md를 쓰고, AI로 index.html과 pre.html을 만들어 GitHub Pages에 배포하는 시빅해킹 해커톤 강의자료." />
+<meta name="author" content="weniv" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="우리는, 시빅해커 — AI로 사회문제를 해결하는 해커톤" />
+<meta property="og:description" content="문제를 고르고, 요구사항.md를 쓰고, AI로 만들어 GitHub Pages에 배포하기까지." />
+<meta name="theme-color" content="#2E6FF2" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232E6FF2'/%3E%3Cpath d='M8 13v3a4 4 0 0 0 8 0v-3a4 4 0 0 0 8 0' stroke='%23fff' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" />
+<style>
+/* ============================================================
+   0. 디자인 토큰 (위니브 브랜드)
+   ============================================================ */
+:root{
+  --c-primary:#2E6FF2;
+  --c-primary-dark:#1B4FC0;
+  --c-primary-light:#DEE8FF;
+  --c-green:#15BF70;
+  --c-green-light:#DDF6EA;
+  --c-yellow:#FFC533;
+  --c-yellow-light:#FFF3D6;
+  --c-bg:#FFFFFF;
+  --c-surface:#F3F5FA;
+  --c-line:#E3E7F0;
+  --c-text:#121314;
+  --c-text-sub:#47494D;
+  --c-text-caption:#8D9299;
+
+  --r-sm:8px; --r-md:14px; --r-lg:22px; --r-full:999px;
+  --shadow-sm:0 1px 2px rgba(18,19,20,.05), 0 4px 12px rgba(18,19,20,.05);
+  --shadow-md:0 8px 30px rgba(46,111,242,.10);
+  --wrap:1120px;
+  --nav-h:64px;
+  --font:"Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", system-ui, sans-serif;
+  --mono:ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "D2Coding", monospace;
+}
+
+*,*::before,*::after{box-sizing:border-box;}
+html{scroll-behavior:smooth; scroll-padding-top:calc(var(--nav-h) + 16px); -webkit-text-size-adjust:100%;}
+body{
+  margin:0; background:var(--c-bg); color:var(--c-text);
+  font-family:var(--font); font-size:17px; line-height:1.7;
+  word-break:keep-all; overflow-wrap:break-word;
+  -webkit-font-smoothing:antialiased;
+}
+img,svg{max-width:100%;}
+a{color:var(--c-primary); text-decoration:none;}
+a:hover{text-decoration:underline;}
+button{font-family:inherit; font-size:inherit; cursor:pointer;}
+code{font-family:var(--mono); font-size:.92em; background:var(--c-surface); border:1px solid var(--c-line); border-radius:6px; padding:1px 6px;}
+:focus-visible{outline:3px solid var(--c-primary); outline-offset:3px; border-radius:4px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;}
+
+/* ============================================================
+   1. 레이아웃 공통
+   ============================================================ */
+.wrap{width:min(100% - 40px, var(--wrap)); margin-inline:auto;}
+section{padding:88px 0; scroll-margin-top:var(--nav-h);}
+section.alt{background:var(--c-surface);}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:700; letter-spacing:.02em;
+  color:var(--c-primary); background:var(--c-primary-light);
+  padding:6px 14px; border-radius:var(--r-full); margin:0 0 18px;
+}
+.eyebrow.green{color:#0E8A50; background:var(--c-green-light);}
+.eyebrow.yellow{color:#8A6100; background:var(--c-yellow-light);}
+h2.title{
+  font-size:clamp(28px, 4.6vw, 42px); line-height:1.28; letter-spacing:-.02em;
+  font-weight:800; margin:0 0 16px;
+}
+h3{font-size:clamp(20px,2.6vw,24px); line-height:1.4; letter-spacing:-.01em; font-weight:700; margin:0 0 10px;}
+.lead{font-size:clamp(17px,2vw,19px); color:var(--c-text-sub); margin:0 0 40px; max-width:62ch;}
+.muted{color:var(--c-text-caption); font-size:15px;}
+.sub-h{margin:52px 0 18px; font-size:clamp(19px,2.4vw,22px);}
+
+/* ============================================================
+   2. 헤더 / 네비게이션
+   ============================================================ */
+.header{
+  position:sticky; top:0; z-index:100;
+  background:rgba(255,255,255,.88); backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--c-line);
+}
+.header-inner{height:var(--nav-h); display:flex; align-items:center; gap:20px;}
+.brand{display:flex; align-items:center; gap:10px; flex:0 0 auto;}
+.brand .logo{height:26px; width:auto; display:block;}
+.brand .divider{width:1px; height:20px; background:var(--c-line);}
+.brand .brand-txt{font-size:15px; font-weight:700; letter-spacing:-.01em; white-space:nowrap;}
+.nav{margin-left:auto;}
+.nav ul{display:flex; gap:2px; list-style:none; margin:0; padding:0;}
+.nav a{
+  display:block; padding:8px 11px; border-radius:var(--r-full);
+  font-size:15px; font-weight:600; color:var(--c-text-sub); white-space:nowrap;
+}
+.nav a:hover{background:var(--c-surface); color:var(--c-text); text-decoration:none;}
+.nav a.active{color:var(--c-primary); background:var(--c-primary-light);}
+.nav-toggle{
+  display:none; margin-left:auto; width:42px; height:42px; padding:0;
+  border:1px solid var(--c-line); background:#fff; border-radius:var(--r-sm);
+  align-items:center; justify-content:center;
+}
+.nav-toggle span{display:block; width:18px; height:2px; background:var(--c-text); position:relative;}
+.nav-toggle span::before,.nav-toggle span::after{
+  content:""; position:absolute; left:0; width:18px; height:2px; background:var(--c-text);
+  transition:transform .2s ease, top .2s ease;
+}
+.nav-toggle span::before{top:-6px;} .nav-toggle span::after{top:6px;}
+.nav-toggle[aria-expanded="true"] span{background:transparent;}
+.nav-toggle[aria-expanded="true"] span::before{top:0; transform:rotate(45deg);}
+.nav-toggle[aria-expanded="true"] span::after{top:0; transform:rotate(-45deg);}
+
+/* ============================================================
+   3. 히어로
+   ============================================================ */
+.hero{
+  position:relative; overflow:hidden; padding:96px 0 88px;
+  background:
+    radial-gradient(900px 420px at 12% -10%, #DEE8FF 0%, transparent 60%),
+    radial-gradient(720px 420px at 92% 8%, #DDF6EA 0%, transparent 62%),
+    radial-gradient(520px 320px at 60% 100%, #FFF3D6 0%, transparent 70%),
+    #fff;
+}
+.hero h1{
+  font-size:clamp(34px, 6.6vw, 62px); line-height:1.18; letter-spacing:-.03em;
+  font-weight:800; margin:0 0 20px;
+}
+.hero h1 .accent{
+  background:linear-gradient(180deg, transparent 62%, var(--c-yellow) 62%);
+  padding:0 2px;
+}
+.hero p.sub{font-size:clamp(17px,2.2vw,21px); color:var(--c-text-sub); margin:0 0 34px; max-width:62ch;}
+.hero-cta{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:44px;}
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 24px; border-radius:var(--r-full); border:1px solid transparent;
+  font-size:16px; font-weight:700; letter-spacing:-.01em; transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{text-decoration:none; transform:translateY(-2px);}
+.btn-primary{background:var(--c-primary); color:#fff; box-shadow:var(--shadow-md);}
+.btn-primary:hover{background:var(--c-primary-dark);}
+.btn-ghost{background:#fff; color:var(--c-text); border-color:var(--c-line); box-shadow:var(--shadow-sm);}
+.hero-stats{display:flex; flex-wrap:wrap; gap:12px;}
+.stat{
+  background:rgba(255,255,255,.72); border:1px solid var(--c-line);
+  border-radius:var(--r-md); padding:16px 20px; min-width:150px; flex:1 1 150px; max-width:250px;
+}
+.stat b{display:block; font-size:24px; line-height:1.25; letter-spacing:-.02em; color:var(--c-primary);}
+.stat span{font-size:14px; color:var(--c-text-sub);}
+
+/* ============================================================
+   4. 카드 / 그리드 공통
+   ============================================================ */
+.grid{display:grid; gap:20px;}
+.grid-2{grid-template-columns:repeat(2,1fr);}
+.grid-3{grid-template-columns:repeat(3,1fr);}
+.grid-4{grid-template-columns:repeat(4,1fr);}
+.card{
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-lg);
+  padding:26px; box-shadow:var(--shadow-sm);
+}
+/* 카드 상단 색 강조 — 아이콘 대신 리듬을 만든다 */
+.card.a1{border-top:3px solid var(--c-primary);}
+.card.a2{border-top:3px solid var(--c-green);}
+.card.a3{border-top:3px solid var(--c-yellow);}
+.card p{margin:0; color:var(--c-text-sub); font-size:16px;}
+.quote{
+  border-left:4px solid var(--c-primary); background:var(--c-surface);
+  border-radius:0 var(--r-md) var(--r-md) 0; padding:20px 24px; margin:0;
+  font-size:clamp(17px,2.2vw,20px); font-weight:600; line-height:1.6; letter-spacing:-.01em;
+}
+.quote cite{display:block; margin-top:10px; font-size:14px; font-weight:500; font-style:normal; color:var(--c-text-caption);}
+
+/* 제출물 안내 박스 */
+.deliver{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+  background:var(--c-text); color:#fff; border-radius:var(--r-lg); padding:26px 28px;
+}
+.deliver > div{display:flex; flex-direction:column; gap:4px;}
+.deliver dt{font-size:13px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#8D9299;}
+.deliver dd{margin:0; font-size:18px; font-weight:700; letter-spacing:-.01em;}
+.deliver dd small{display:block; font-size:14px; font-weight:500; color:#C9CDD4; letter-spacing:0; margin-top:4px;}
+.deliver code{background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.18); color:#fff;}
+
+/* ============================================================
+   5. 로드맵
+   ============================================================ */
+.roadmap{position:relative; margin-bottom:36px;}
+.roadmap-track{
+  display:grid; grid-template-columns:repeat(6,1fr); gap:10px; position:relative;
+}
+.roadmap-track::before{
+  content:""; position:absolute; left:6%; right:6%; top:31px; height:3px;
+  background:linear-gradient(90deg,var(--c-primary),var(--c-green),var(--c-yellow));
+  border-radius:2px; opacity:.35;
+}
+.step{
+  position:relative; display:flex; flex-direction:column; align-items:center; gap:10px;
+  background:none; border:0; padding:6px 4px; text-align:center; color:var(--c-text-sub);
+}
+.step .dot{
+  width:62px; height:62px; border-radius:50%; display:grid; place-items:center;
+  background:#fff; border:3px solid var(--c-line); font-size:22px; font-weight:800;
+  color:var(--c-text-caption); transition:transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.step .label{font-size:15px; font-weight:700; line-height:1.35; letter-spacing:-.01em;}
+.step:hover .dot{transform:translateY(-4px); border-color:var(--c-primary);}
+.step[aria-selected="true"] .dot{
+  background:var(--c-primary); border-color:var(--c-primary); color:#fff; box-shadow:var(--shadow-md);
+}
+.step[aria-selected="true"] .label{color:var(--c-primary);}
+
+.stage-panel{
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-lg);
+  padding:clamp(24px,4vw,40px); box-shadow:var(--shadow-sm);
+}
+.stage-head{display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:8px;}
+.stage-num{
+  flex:0 0 auto; width:44px; height:44px; border-radius:12px; display:grid; place-items:center;
+  background:var(--c-primary); color:#fff; font-weight:800; font-size:19px;
+}
+.stage-head h3{margin:0;}
+.stage-time{
+  margin-left:auto; font-size:13px; font-weight:700; color:var(--c-text-caption);
+  background:var(--c-surface); border-radius:var(--r-full); padding:6px 14px; white-space:nowrap;
+}
+.stage-goal{color:var(--c-text-sub); margin:0 0 26px;}
+.stage-body{display:grid; grid-template-columns:1.15fr .85fr; gap:28px;}
+.block-title{
+  display:flex; align-items:center; gap:8px; font-size:14px; font-weight:800;
+  letter-spacing:.04em; text-transform:uppercase; color:var(--c-text-caption); margin:0 0 12px;
+}
+.key-list{list-style:none; margin:0 0 26px; padding:0; display:grid; gap:10px;}
+.key-list li{position:relative; padding-left:26px; color:var(--c-text-sub);}
+.key-list li::before{
+  content:""; position:absolute; left:6px; top:12px; width:7px; height:7px;
+  border-radius:50%; background:var(--c-primary);
+}
+.key-list li b{color:var(--c-text);}
+.ai-box{background:var(--c-green-light); border-radius:var(--r-md); padding:20px 22px; margin-bottom:22px;}
+.ai-box .block-title{color:#0E8A50;}
+.ai-box ul{margin:0; padding-left:20px; display:grid; gap:8px; color:#0F5C3A; font-size:16px;}
+.tool-chips{display:flex; flex-wrap:wrap; gap:8px; margin:0;}
+.chip-static{
+  background:var(--c-surface); border:1px solid var(--c-line); border-radius:var(--r-full);
+  padding:6px 14px; font-size:14px; font-weight:600; color:var(--c-text-sub);
+}
+.mission-box{background:var(--c-yellow-light); border-radius:var(--r-md); padding:20px 22px;}
+.mission-box .block-title{color:#8A6100;}
+.mission-box ol{margin:0; padding-left:20px; display:grid; gap:10px; color:#5C4200; font-size:16px;}
+.mission-box .publish{
+  margin-top:16px; padding-top:14px; border-top:1px dashed rgba(138,97,0,.3);
+  font-size:14px; color:#8A6100; font-weight:600;
+}
+.stage-nav{display:flex; justify-content:space-between; gap:12px; margin-top:28px; padding-top:22px; border-top:1px solid var(--c-line);}
+.stage-nav button{
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-full);
+  padding:10px 18px; font-size:15px; font-weight:700; color:var(--c-text-sub);
+}
+.stage-nav button:hover:not(:disabled){border-color:var(--c-primary); color:var(--c-primary);}
+.stage-nav button:disabled{opacity:.35; cursor:default;}
+
+/* ============================================================
+   6. 주제 찾기 · 아이디어 점검
+   ============================================================ */
+.finder{
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-lg);
+  padding:clamp(22px,3.6vw,34px); box-shadow:var(--shadow-sm);
+}
+.finder-row + .finder-row{margin-top:24px;}
+.finder-row > p{margin:0 0 12px; font-weight:700; font-size:16px;}
+.finder-row > p span{font-weight:500; color:var(--c-text-caption); font-size:14px; margin-left:6px;}
+.chips{display:flex; flex-wrap:wrap; gap:8px;}
+.chip{
+  border:1px solid var(--c-line); background:#fff; color:var(--c-text-sub);
+  border-radius:var(--r-full); padding:9px 16px; font-size:15px; font-weight:600;
+  transition:all .15s ease;
+}
+.chip:hover{border-color:var(--c-primary); color:var(--c-primary);}
+.chip[aria-pressed="true"]{background:var(--c-primary); border-color:var(--c-primary); color:#fff;}
+.chip.scope[aria-pressed="true"]{background:var(--c-green); border-color:var(--c-green);}
+.finder-actions{display:flex; flex-wrap:wrap; gap:10px; margin-top:24px;}
+.btn-sm{padding:10px 18px; font-size:15px;}
+.results{margin-top:26px; display:grid; gap:14px;}
+.topic{
+  border:1px solid var(--c-line); border-radius:var(--r-md); padding:20px 22px; background:var(--c-surface);
+  animation:pop .32s ease both;
+}
+@keyframes pop{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;}}
+.topic-top{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px;}
+.badge{
+  font-size:12px; font-weight:800; letter-spacing:.02em; padding:4px 10px;
+  border-radius:var(--r-full); background:var(--c-primary-light); color:var(--c-primary-dark);
+}
+.badge.scope{background:var(--c-green-light); color:#0E8A50;}
+.badge.match{background:var(--c-yellow-light); color:#8A6100;}
+.topic h4{margin:0 0 10px; font-size:19px; line-height:1.45; letter-spacing:-.01em;}
+.topic dl{margin:0; display:grid; gap:8px; font-size:15px;}
+.topic dl div{display:flex; gap:10px; align-items:flex-start;}
+.topic dt{flex:0 0 auto; font-weight:700; color:var(--c-text-caption); font-size:13px; padding-top:2px; width:74px;}
+.topic dd{margin:0; color:var(--c-text-sub);}
+.empty{color:var(--c-text-caption); text-align:center; padding:34px 10px; border:1px dashed var(--c-line); border-radius:var(--r-md);}
+
+.scorer{display:grid; grid-template-columns:1.1fr .9fr; gap:28px; align-items:start;}
+.sliders{display:grid; gap:22px;}
+.slider-row label{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-weight:700; margin-bottom:8px;}
+.slider-row label em{font-style:normal; font-weight:500; font-size:14px; color:var(--c-text-caption);}
+.slider-row output{font-variant-numeric:tabular-nums; font-weight:800; color:var(--c-primary); font-size:18px;}
+input[type=range]{
+  width:100%; -webkit-appearance:none; appearance:none; height:8px; border-radius:var(--r-full);
+  background:var(--c-line); outline-offset:6px;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none; width:24px; height:24px; border-radius:50%;
+  background:var(--c-primary); border:3px solid #fff; box-shadow:var(--shadow-md); cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:24px; height:24px; border-radius:50%; background:var(--c-primary);
+  border:3px solid #fff; box-shadow:var(--shadow-md); cursor:pointer;
+}
+.score-view{background:var(--c-surface); border-radius:var(--r-lg); padding:26px; text-align:center;}
+.score-total{font-size:52px; font-weight:800; letter-spacing:-.03em; line-height:1.1; color:var(--c-primary);}
+.score-total small{font-size:20px; color:var(--c-text-caption); font-weight:600;}
+.score-bars{display:flex; justify-content:center; align-items:flex-end; gap:16px; height:130px; margin:22px 0 16px;}
+.bar{width:44px; border-radius:8px 8px 0 0; transition:height .3s cubic-bezier(.2,.8,.2,1); position:relative;}
+.bar span{position:absolute; bottom:-24px; left:50%; transform:translateX(-50%); font-size:12px; font-weight:700; color:var(--c-text-caption); white-space:nowrap;}
+.score-msg{margin:26px 0 0; font-size:15px; color:var(--c-text-sub); min-height:3em;}
+
+/* ============================================================
+   7. 요구사항.md / 프롬프트 카드
+   ============================================================ */
+.code-card{
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-lg);
+  padding:22px 24px; display:flex; flex-direction:column; gap:14px; box-shadow:var(--shadow-sm);
+}
+.code-card h4{margin:0; font-size:17px; letter-spacing:-.01em; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.code-card h4 em{font-style:normal; font-size:13px; font-weight:600; color:var(--c-text-caption);}
+.code-card pre{
+  margin:0; flex:1; background:var(--c-surface); border-radius:var(--r-md); padding:16px;
+  font-family:var(--mono); font-size:13.5px; line-height:1.7; color:var(--c-text-sub);
+  white-space:pre-wrap; word-break:break-word; overflow-x:auto;
+}
+.copy-btn{
+  align-self:flex-start; background:var(--c-primary-light); color:var(--c-primary-dark);
+  border:0; border-radius:var(--r-full); padding:8px 16px; font-size:14px; font-weight:700;
+}
+.copy-btn:hover{background:var(--c-primary); color:#fff;}
+.copy-btn.done{background:var(--c-green); color:#fff;}
+.spec-card{border-color:var(--c-primary); box-shadow:var(--shadow-md);}
+.spec-card pre{background:#0F172A; color:#D7DEEA; border:0;}
+.spec-card pre b{color:#FFC533; font-weight:700;}
+.spec-card pre i{color:#7FE3B0; font-style:normal;}
+
+.badnote{display:grid; gap:10px; margin:0; padding:0; list-style:none;}
+.badnote li{
+  display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:start;
+  font-size:15.5px; color:var(--c-text-sub);
+}
+.badnote li i{font-style:normal; font-weight:800;}
+.badnote .x i{color:#D93B3B;} .badnote .o i{color:#0E8A50;}
+
+/* ============================================================
+   8. 체크리스트
+   ============================================================ */
+.progress-wrap{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-full);
+  padding:14px 22px; margin-bottom:26px; box-shadow:var(--shadow-sm);
+}
+.progress-bar{flex:1 1 220px; height:10px; border-radius:var(--r-full); background:var(--c-surface); overflow:hidden;}
+.progress-bar i{
+  display:block; height:100%; width:0%; border-radius:var(--r-full);
+  background:linear-gradient(90deg,var(--c-primary),var(--c-green)); transition:width .35s ease;
+}
+.progress-wrap b{font-variant-numeric:tabular-nums; white-space:nowrap;}
+.progress-wrap button{
+  background:none; border:0; color:var(--c-text-caption); font-size:14px; font-weight:600; text-decoration:underline; padding:0;
+}
+.check-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
+.check-group{
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-lg);
+  padding:22px 24px; box-shadow:var(--shadow-sm);
+}
+.check-group > h4{
+  margin:0 0 14px; font-size:17px; font-weight:800; letter-spacing:-.01em;
+  display:flex; align-items:center; gap:10px;
+}
+.check-group > h4 i{
+  font-style:normal; width:26px; height:26px; border-radius:8px; background:var(--c-primary-light);
+  color:var(--c-primary-dark); font-size:13px; display:grid; place-items:center; flex:0 0 auto;
+}
+.check{
+  display:flex; align-items:flex-start; gap:12px; padding:10px 12px; background:#fff;
+  border:1px solid var(--c-line); border-radius:var(--r-md); margin-bottom:8px; cursor:pointer;
+  transition:border-color .15s ease, background .15s ease;
+}
+.check:hover{border-color:var(--c-primary);}
+.check:last-child{margin-bottom:0;}
+.check input{
+  flex:0 0 auto; width:20px; height:20px; margin:2px 0 0; accent-color:var(--c-primary); cursor:pointer;
+}
+.check span{font-size:15.5px; color:var(--c-text-sub);}
+.check input:checked + span{color:var(--c-text-caption); text-decoration:line-through;}
+
+/* ============================================================
+   9. 타임라인 / 자료실 / 푸터
+   ============================================================ */
+.timeline{display:grid; gap:12px;}
+.tl-item{
+  display:grid; grid-template-columns:118px 1fr; gap:20px; align-items:start;
+  background:#fff; border:1px solid var(--c-line); border-radius:var(--r-md); padding:18px 22px;
+}
+.tl-item.mark{border-color:var(--c-primary); background:linear-gradient(100deg,#fff,var(--c-primary-light));}
+.tl-time{font-weight:800; color:var(--c-primary); font-size:15px; letter-spacing:-.01em;}
+.tl-time small{display:block; font-weight:600; color:var(--c-text-caption); font-size:13px;}
+.tl-body b{display:block; margin-bottom:4px; font-size:17px; letter-spacing:-.01em;}
+.tl-body p{margin:0; font-size:15px; color:var(--c-text-sub);}
+
+.deploy-steps{counter-reset:ds; display:grid; gap:14px; margin:0; padding:0; list-style:none;}
+.deploy-steps li{
+  position:relative; padding-left:46px; font-size:16px; color:var(--c-text-sub);
+}
+.deploy-steps li::before{
+  counter-increment:ds; content:counter(ds);
+  position:absolute; left:0; top:1px; width:30px; height:30px; border-radius:9px;
+  background:var(--c-primary); color:#fff; font-weight:800; font-size:14px;
+  display:grid; place-items:center;
+}
+.deploy-steps li b{color:var(--c-text);}
+
+.link-card{
+  display:block; background:#fff; border:1px solid var(--c-line);
+  border-radius:var(--r-md); padding:18px 20px; box-shadow:var(--shadow-sm); color:inherit;
+  transition:transform .15s ease, border-color .15s ease;
+}
+.link-card:hover{text-decoration:none; transform:translateY(-3px); border-color:var(--c-primary);}
+.link-card b{display:block; font-size:16px; letter-spacing:-.01em; margin-bottom:2px;}
+.link-card b::after{content:" ↗"; color:var(--c-text-caption); font-weight:600;}
+.link-card span{font-size:14px; color:var(--c-text-caption);}
+
+.footer{background:var(--c-text); color:#C9CDD4; padding:56px 0 40px;}
+.footer .logo-f{height:26px; filter:brightness(0) invert(1); opacity:.9; margin-bottom:18px;}
+.footer h4{color:#fff; font-size:17px; margin:0 0 10px;}
+.footer p{margin:0 0 8px; font-size:14.5px; line-height:1.75;}
+.footer a{color:#fff; text-decoration:underline;}
+.footer-grid{display:grid; grid-template-columns:1.4fr 1fr; gap:36px; margin-bottom:34px;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.14); padding-top:22px; font-size:13.5px; color:#8D9299;}
+
+.to-top{
+  position:fixed; right:20px; bottom:20px; width:46px; height:46px; border-radius:50%;
+  background:var(--c-primary); color:#fff; border:0; box-shadow:var(--shadow-md);
+  display:grid; place-items:center; font-size:20px; z-index:90;
+  opacity:0; visibility:hidden; transform:translateY(10px); transition:all .25s ease;
+}
+.to-top.show{opacity:1; visibility:visible; transform:none;}
+
+/* 스크롤 등장 효과 — JS가 동작할 때만 숨겼다가 보여준다 */
+.js .reveal{opacity:0; transform:translateY(18px); transition:opacity .55s ease, transform .55s ease;}
+.js .reveal.in{opacity:1; transform:none;}
+
+/* ============================================================
+   10. 반응형
+   ============================================================ */
+@media (max-width:1000px){
+  .stage-body{grid-template-columns:1fr;}
+  .scorer{grid-template-columns:1fr;}
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .deliver{grid-template-columns:1fr; gap:18px;}
+}
+@media (max-width:820px){
+  body{font-size:16px;}
+  section{padding:64px 0;}
+  .hero{padding:64px 0 60px;}
+  .nav-toggle{display:flex;}
+  .nav{
+    position:absolute; left:0; right:0; top:var(--nav-h); background:#fff;
+    border-bottom:1px solid var(--c-line); box-shadow:var(--shadow-sm);
+    max-height:0; overflow:hidden; transition:max-height .28s ease;
+  }
+  .nav.open{max-height:70vh; overflow-y:auto;}
+  .nav ul{flex-direction:column; gap:0; padding:8px 20px 16px;}
+  .nav a{padding:13px 12px; border-radius:var(--r-sm); font-size:16px;}
+  .grid-2,.grid-3,.grid-4,.check-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+
+  /* 로드맵 → 세로 스택 */
+  .roadmap-track{grid-template-columns:1fr; gap:0;}
+  .roadmap-track::before{
+    left:30px; right:auto; top:12px; bottom:12px; width:3px; height:auto;
+    background:linear-gradient(180deg,var(--c-primary),var(--c-green),var(--c-yellow));
+  }
+  .step{flex-direction:row; align-items:center; gap:16px; text-align:left; padding:8px 0;}
+  .step .dot{width:44px; height:44px; font-size:17px; flex:0 0 auto; margin-left:8px;}
+  .step .label{font-size:16px;}
+  .stage-time{margin-left:0;}
+  .tl-item{grid-template-columns:1fr; gap:6px;}
+  .tl-time small{display:inline; margin-left:8px;}
+  .to-top{right:14px; bottom:14px;}
+}
+@media (max-width:480px){
+  .wrap{width:calc(100% - 32px);}
+  .brand .brand-txt{display:none;}
+  .btn{width:100%; justify-content:center;}
+  .stat{max-width:none;}
+  .topic dl div{flex-direction:column; gap:2px;}
+  .topic dt{width:auto;}
+  .score-bars{gap:12px;}
+  .bar{width:38px;}
+  .slider-row label{flex-wrap:wrap;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important;}
+  html{scroll-behavior:auto;}
+  .reveal{opacity:1; transform:none;}
+}
+@media print{
+  .header,.to-top,.finder-actions,.stage-nav{display:none;}
+  section{padding:24px 0; break-inside:avoid;}
+}
+</style>
+</head>
+<body>
+
+<!-- 위니브 로고 (한 번 정의하고 재사용) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="weniv-logo" viewBox="0 0 142 32">
+    <path d="M91.9051 25.9292C90.9151 25.9292 90.1134 25.136 90.1134 24.1562C90.1134 19.8138 86.5414 16.2793 82.1525 16.2793C77.7639 16.2793 74.1917 19.8138 74.1917 24.1562C74.1917 25.136 73.3902 25.9292 72.4001 25.9292C71.4099 25.9292 70.6084 25.136 70.6084 24.1562C70.6084 17.858 75.7872 12.7336 82.1525 12.7336C88.5178 12.7336 93.6969 17.858 93.6969 24.1562C93.6969 25.136 92.8952 25.9292 91.9051 25.9292Z" fill="#15BF70"/>
+    <path d="M119.46 25.9292C118.996 25.9292 118.532 25.7557 118.177 25.4105L108.306 15.7609C107.598 15.0685 107.598 13.9451 108.306 13.2528C109.014 12.5605 110.162 12.5605 110.872 13.2528L119.46 21.6484L128.048 13.2528C128.757 12.5605 129.904 12.5605 130.614 13.2528C131.322 13.9451 131.322 15.0685 130.614 15.7609L120.743 25.4105C120.388 25.7557 119.924 25.9292 119.46 25.9292Z" fill="#2E6FF2"/>
+    <path d="M100.877 25.9292C99.8653 25.9292 99.0466 25.1362 99.0466 24.1567V14.2253C99.0466 13.2458 99.8653 12.4528 100.877 12.4528C101.888 12.4528 102.707 13.2458 102.707 14.2253V24.1567C102.707 25.1362 101.888 25.9292 100.877 25.9292Z" fill="#FFC533"/>
+    <path d="M101.019 9.82393C102.351 9.82393 103.431 8.74406 103.431 7.41196C103.431 6.07987 102.351 5 101.019 5C99.687 5 98.6072 6.07987 98.6072 7.41196C98.6072 8.74406 99.687 9.82393 101.019 9.82393Z" fill="#FFC533"/>
+    <path d="M133.638 25.9037C134.97 25.9037 136.05 24.8238 136.05 23.4917C136.05 22.1596 134.97 21.0797 133.638 21.0797C132.306 21.0797 131.226 22.1596 131.226 23.4917C131.226 24.8238 132.306 25.9037 133.638 25.9037Z" fill="#FFC533"/>
+    <path d="M59.2982 26.4917C58.3377 26.4917 57.3771 26.305 56.4601 25.9317C54.5921 25.1718 53.1304 23.726 52.3444 21.8612C51.5585 19.9964 51.5434 17.9392 52.3028 16.063C53.0583 14.1887 54.499 12.722 56.3558 11.9334C58.2123 11.1448 60.2646 11.1296 62.1344 11.8915C64.0024 12.6515 65.4641 14.0972 66.2501 15.962C66.6184 16.8344 66.2102 17.8401 65.3425 18.2078L56.4943 21.9621C56.855 22.2954 57.2765 22.5641 57.7435 22.7546C58.7666 23.1717 59.8906 23.1621 60.9061 22.7316C61.8459 22.3335 62.6032 21.604 63.036 20.6783C63.4366 19.8212 64.4542 19.4535 65.3085 19.8554C66.1628 20.2573 66.5292 21.2783 66.1286 22.1355C65.337 23.8268 63.953 25.1603 62.2369 25.8899C61.2916 26.2916 60.2949 26.4917 59.2982 26.4917ZM57.6865 15.0915C56.671 15.5239 55.8812 16.3258 55.4654 17.3525C55.2755 17.8211 55.1749 18.3125 55.1615 18.804L62.0983 15.8611C61.7377 15.5277 61.3143 15.2668 60.8492 15.0687C60.2834 14.8287 59.0627 14.5049 57.6865 15.0915Z" fill="#2E6FF2"/>
+    <path d="M46.2675 12.7081C45.266 12.7081 44.4554 13.5012 44.4554 14.4809C44.4554 18.8235 40.8425 22.3579 36.4038 22.3579C31.9648 22.3579 28.3519 18.8235 28.3519 14.4809C28.3519 13.5012 27.5413 12.7081 26.5397 12.7081C25.5384 12.7081 24.7276 13.5012 24.7276 14.4809C24.7276 18.8235 21.1148 22.3579 16.676 22.3579C12.2372 22.3579 8.62431 18.8235 8.62431 14.4809C8.62431 13.5012 7.81361 12.7081 6.81214 12.7081C5.8107 12.7081 5 13.5012 5 14.4809C5 20.7792 10.2381 25.9037 16.676 25.9037C20.823 25.9037 24.4682 23.7763 26.5397 20.5814C28.6115 23.7763 32.2586 25.9037 36.4038 25.9037C42.8416 25.9037 48.0797 20.7792 48.0797 14.4809C48.0797 13.5012 47.2689 12.7081 46.2675 12.7081Z" fill="#FFC533"/>
+  </symbol>
+</svg>
+
+<script>document.documentElement.classList.add("js");</script>
+
+<a href="#main" class="sr-only">본문 바로가기</a>
+
+<!-- ============ 헤더 ============ -->
+<header class="header">
+  <div class="wrap header-inner">
+    <a class="brand" href="#top" aria-label="위니브 - 우리는 시빅해커 홈">
+      <svg class="logo" viewBox="0 0 142 32" role="img" aria-label="weniv"><use href="#weniv-logo"/></svg>
+      <span class="divider" aria-hidden="true"></span>
+      <span class="brand-txt">우리는, 시빅해커</span>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="nav" aria-label="메뉴 열기">
+      <span></span>
+    </button>
+    <nav class="nav" id="nav" aria-label="주요 섹션">
+      <ul>
+        <li><a href="#why">왜 하나요</a></li>
+        <li><a href="#roadmap">6단계</a></li>
+        <li><a href="#finder">주제 찾기</a></li>
+        <li><a href="#spec">요구사항.md</a></li>
+        <li><a href="#ai">AI 활용법</a></li>
+        <li><a href="#missions">체크리스트</a></li>
+        <li><a href="#timeline">일정</a></li>
+        <li><a href="#resources">자료실</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ 히어로 ============ -->
+<div class="hero" id="top">
+  <div class="wrap">
+    <p class="eyebrow">AI 시대의 시빅해킹 해커톤 · 강의자료</p>
+    <h1>우리는,<br><span class="accent">시빅해커</span>입니다.</h1>
+    <p class="sub">
+      좋은 해결책은 좋은 질문에서 시작합니다.
+      오늘 우리는 내 주변의 불편 하나를 골라 <b>요구사항.md</b>로 정의하고,
+      AI와 함께 웹페이지로 만들어 <b>실제로 접속되는 링크</b>까지 만들어 봅니다.
+      경쟁하지 않습니다. 여러분을 평가할 사람은 없습니다.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#roadmap">6단계 흐름 보기 →</a>
+      <a class="btn btn-ghost" href="#finder">내 주제 찾아보기</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><b>2개</b><span>만들 파일 — index.html · pre.html</span></div>
+      <div class="stat"><b>1개</b><span>제출물 — GitHub Pages URL</span></div>
+      <div class="stat"><b>3분</b><span>발표 시간</span></div>
+      <div class="stat"><b>0명</b><span>여러분을 평가할 사람</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 왜 시빅해킹인가 ============ -->
+<section id="why" class="alt">
+  <div class="wrap">
+    <p class="eyebrow reveal">01. 왜 하나요?</p>
+    <h2 class="title reveal">모든 것을 의심하는 것이<br>이곳의 규칙이에요.</h2>
+    <p class="lead reveal">
+      우리는 왜 SW를 배우나요? 왜 누군가에게 평가받아야 하죠? 오지선다형 밖에 세상은 없나요?
+      이 강의는 답을 주지 않습니다. 대신 <b>질문을 문서로 옮기는 법</b>을 함께 연습합니다.
+    </p>
+
+    <blockquote class="quote reveal">
+      시빅해킹(Civic Hacking)은 <b>시민들</b>이 <b>새로운 도구와 접근 방법</b>을 사용하여
+      <b>신속하고 창의적으로 협업</b>함으로써 그들의 도시 또는 정부 시스템을 개선시켜 나가는 사회운동
+      <cite>출처: 위키백과</cite>
+    </blockquote>
+
+    <div class="grid grid-3 reveal" style="margin-top:36px;">
+      <div class="card a1">
+        <h3>2020년에 있었던 일</h3>
+        <p>가짜뉴스에 맞서 정확한 정보를 전하려고 코로나맵이 만들어졌습니다. 자원봉사자 80명, 마스크맵을 포함해 10개 프로젝트, 수백만 명의 방문자.</p>
+      </div>
+      <div class="card a2">
+        <h3>지금 달라진 것</h3>
+        <p>그때 여러 사람이 며칠 걸려 만들던 화면을, 지금은 혼자서 반나절에 세울 수 있습니다. <b>만드는 일은 더 이상 병목이 아닙니다.</b></p>
+      </div>
+      <div class="card a3">
+        <h3>그래서 오늘의 승부처</h3>
+        <p>남은 병목은 하나 — <b>무엇을 만들지 정확히 말하는 능력</b>입니다. 오늘 여러분이 직접 쓸 파일은 코드가 아니라 <code>요구사항.md</code> 한 장입니다.</p>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top:20px; background:linear-gradient(120deg,#fff, var(--c-primary-light));">
+      <h3>거대한 문샷 씽킹이 아니라, 미노베이션(Mini + innovation)</h3>
+      <p style="max-width:72ch;">
+        혁신이 아니라 <b>혁신적 실행력</b>입니다. 사소한 변화들의 축적이 거대한 물결을 만듭니다.
+        오늘 만들 것은 세상을 바꾸는 플랫폼이 아니라 <b>웹페이지 한 장</b>입니다.
+        지극히 개인적인 문제여도 괜찮습니다. 그것은 여러분만의 문제가 아니거든요.
+      </p>
+    </div>
+
+    <div class="deliver reveal" style="margin-top:20px;">
+      <div>
+        <dt>만들 것</dt>
+        <dd><code>index.html</code> + <code>pre.html</code><small>해결책 웹페이지와 3분 발표자료</small></dd>
+      </div>
+      <div>
+        <dt>제출할 것</dt>
+        <dd>GitHub Pages URL 하나<small>구글 폼으로 제출 · 링크가 열려야 제출입니다</small></dd>
+      </div>
+      <div>
+        <dt>말할 것</dt>
+        <dd>3분<small>불편했던 장면 → 만든 것 → 배운 것</small></dd>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6단계 로드맵 ============ -->
+<section id="roadmap">
+  <div class="wrap">
+    <p class="eyebrow reveal">02. 전체 흐름</p>
+    <h2 class="title reveal">문제에서 링크까지, 6단계</h2>
+    <p class="lead reveal">
+      단계를 눌러 무엇을 하고 무엇을 남겨야 하는지 확인하세요.
+      시간은 짧습니다. 각 단계에서 <b>완벽</b>하지 말고 <b>다음 단계로 넘어갈 만큼</b>만 하세요.
+    </p>
+
+    <div class="roadmap reveal">
+      <div class="roadmap-track" role="tablist" aria-label="시빅해킹 6단계"><!-- JS로 채움 --></div>
+    </div>
+
+    <div class="stage-panel" id="stagePanel" role="tabpanel" tabindex="0"><!-- JS로 채움 --></div>
+  </div>
+</section>
+
+<!-- ============ 주제 찾기 ============ -->
+<section id="finder" class="alt">
+  <div class="wrap">
+    <p class="eyebrow green reveal">03. 주제 찾기</p>
+    <h2 class="title reveal">자, 여러분 주위에는<br>어떤 문제가 있나요?</h2>
+    <p class="lead reveal">
+      관심 있는 <b>분야</b>를 고르고, 그 문제가 누구의 문제인지 <b>범위</b>를 골라보세요.
+      아래는 정답이 아니라 <b>출발점</b>입니다. 마음에 드는 문장이 있다면 그것을 내 언어로 다시 쓰세요.
+    </p>
+
+    <div class="finder reveal">
+      <div class="finder-row">
+        <p>1. 어떤 분야가 궁금한가요? <span>(여러 개 선택 가능)</span></p>
+        <div class="chips" id="domainChips"></div>
+      </div>
+      <div class="finder-row">
+        <p>2. 누구의 문제인가요? <span>(선택하면 해당 범위의 주제를 위로 올려드려요)</span></p>
+        <div class="chips" id="scopeChips"></div>
+      </div>
+      <div class="finder-actions">
+        <button class="btn btn-primary btn-sm" id="findBtn">주제 찾아보기</button>
+        <button class="btn btn-ghost btn-sm" id="randomBtn">랜덤으로 하나 뽑기</button>
+        <button class="btn btn-ghost btn-sm" id="resetBtn">초기화</button>
+      </div>
+      <div class="results" id="results" aria-live="polite">
+        <p class="empty">분야를 하나 이상 골라주세요. 고민된다면 <b>랜덤으로 하나 뽑기</b>도 좋은 방법입니다.</p>
+      </div>
+    </div>
+
+    <div class="card reveal" style="margin-top:20px;">
+      <h3>주제가 잘 안 잡힐 때 쓰는 확장 사다리</h3>
+      <p style="margin-bottom:14px;">호기심 · 문제 · 고민을 아래 순서로 넓혀보세요. 어디서 멈춰도 괜찮습니다.</p>
+      <div class="tool-chips">
+        <span class="chip-static">나</span><span aria-hidden="true">→</span>
+        <span class="chip-static">가족</span><span aria-hidden="true">→</span>
+        <span class="chip-static">이웃</span><span aria-hidden="true">→</span>
+        <span class="chip-static">지역</span><span aria-hidden="true">→</span>
+        <span class="chip-static">국가</span><span aria-hidden="true">→</span>
+        <span class="chip-static">세계</span>
+      </div>
+    </div>
+
+    <h3 class="sub-h reveal">고른 주제, 오늘 안에 될까요?</h3>
+    <p class="lead reveal" style="margin-bottom:26px;">
+      세 축으로 점검해봅니다. 점수가 낮다고 나쁜 주제가 아닙니다.
+      주제를 바꾸기 전에 <b>더 작게 자르는 것</b>을 먼저 고민하세요.
+    </p>
+    <div class="scorer reveal">
+      <div class="sliders">
+        <div class="slider-row">
+          <label for="sx">오늘 안에 만들 수 있나 <em>웹페이지 한 장으로 표현되나요?</em> <output id="ox">5</output></label>
+          <input type="range" id="sx" min="1" max="10" value="5" />
+        </div>
+        <div class="slider-row">
+          <label for="sy">누군가에게 도움이 되나 <em>이 페이지로 누구의 하루가 나아지나요?</em> <output id="oy">5</output></label>
+          <input type="range" id="sy" min="1" max="10" value="5" />
+        </div>
+        <div class="slider-row">
+          <label for="sz">내가 정말 궁금한가 <em>3분 동안 신나서 말할 수 있나요?</em> <output id="oz">5</output></label>
+          <input type="range" id="sz" min="1" max="10" value="5" />
+        </div>
+        <p class="muted" style="margin:0;">세 축 모두 10점일 필요는 없습니다. 후보 주제를 2~3개 넣고 비교해보면 선택이 훨씬 빨라집니다.</p>
+      </div>
+      <div class="score-view">
+        <div class="score-total"><span id="totalNum">15</span><small> / 30</small></div>
+        <div class="score-bars" aria-hidden="true">
+          <div class="bar" id="bx" style="height:50%; background:var(--c-primary);"><span>구현</span></div>
+          <div class="bar" id="by" style="height:50%; background:var(--c-green);"><span>도움</span></div>
+          <div class="bar" id="bz" style="height:50%; background:var(--c-yellow);"><span>흥미</span></div>
+        </div>
+        <p class="score-msg" id="scoreMsg" aria-live="polite"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 요구사항.md ============ -->
+<section id="spec">
+  <div class="wrap">
+    <p class="eyebrow reveal">04. 오늘의 핵심</p>
+    <h2 class="title reveal">코드보다 먼저,<br>요구사항.md 를 씁니다.</h2>
+    <p class="lead reveal">
+      건물을 지을 때 설계 도면이 먼저입니다. AI에게 시킬 일도 마찬가지예요.
+      결과물이 마음에 들지 않으면 코드를 붙잡지 말고 <b>요구사항.md 를 고쳐서 다시 만드세요.</b>
+      이 파일이 오늘 여러분이 직접 쓰는 유일한 문서입니다.
+    </p>
+
+    <div class="grid grid-3 reveal" style="margin-bottom:28px;">
+      <div class="card a1">
+        <h3 style="font-size:19px;">목적</h3>
+        <p>어떤 문제를, 누구를 위해 푸는지. 여기가 흔들리면 아래가 전부 흔들립니다.</p>
+      </div>
+      <div class="card a2">
+        <h3 style="font-size:19px;">기능</h3>
+        <p>화면에 무엇이 보이고, 무엇을 누르면 무엇이 바뀌는지. <b>확인할 수 있는 문장</b>으로.</p>
+      </div>
+      <div class="card a3">
+        <h3 style="font-size:19px;">제약</h3>
+        <p>지켜야 할 것과 하지 말 것. 제약이 없으면 AI는 필요 없는 것까지 만듭니다.</p>
+      </div>
+    </div>
+
+    <div class="code-card spec-card reveal">
+      <h4>요구사항.md 템플릿 <em>대괄호만 내 프로젝트 내용으로 바꾸세요</em></h4>
+      <pre id="specTemplate"></pre>
+      <button class="copy-btn" type="button" id="copySpec">템플릿 복사하기</button>
+    </div>
+
+    <div class="grid grid-2 reveal" style="margin-top:20px;">
+      <div class="card">
+        <h3 style="font-size:19px;">이렇게 쓰면 AI가 헤맵니다</h3>
+        <ul class="badnote">
+          <li class="x"><i>✕</i><span>사용자 친화적이고 직관적인 UI로 만들어줘</span></li>
+          <li class="x"><i>✕</i><span>지도에 데이터를 적절히 표시해줘</span></li>
+          <li class="x"><i>✕</i><span>예쁘고 세련되게</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 style="font-size:19px;">이렇게 쓰면 정확히 나옵니다</h3>
+        <ul class="badnote">
+          <li class="o"><i>✓</i><span>첫 화면 맨 위에 검색창 하나와 안내 문장 한 줄이 보인다</span></li>
+          <li class="o"><i>✓</i><span>지역 버튼을 누르면 아래 목록이 그 지역 항목만 남는다</span></li>
+          <li class="o"><i>✓</i><span>파란색 #2E6FF2 하나만 강조색으로 쓰고, 글자는 18px 이상</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI 활용법 ============ -->
+<section id="ai" class="alt">
+  <div class="wrap">
+    <p class="eyebrow reveal">05. AI 활용법</p>
+    <h2 class="title reveal">AI는 심사위원이 아니라,<br>가장 부지런한 팀원입니다.</h2>
+    <p class="lead reveal">그대로 복사해서 쓰고, 여러분의 주제에 맞게 <b>[대괄호]</b> 부분만 바꿔보세요. 답이 마음에 들지 않으면 되묻는 것이 핵심입니다.</p>
+
+    <div class="grid grid-2 reveal" id="promptGrid"></div>
+
+    <div class="grid grid-4 reveal" style="margin-top:32px;">
+      <div class="card a1">
+        <h3 style="font-size:18px;">사실은 직접 확인</h3>
+        <p style="font-size:15px;">AI는 그럴듯한 거짓을 말합니다. 통계·법령·기관명은 반드시 원문 출처로 확인하세요.</p>
+      </div>
+      <div class="card a2">
+        <h3 style="font-size:18px;">개인정보 금지</h3>
+        <p style="font-size:15px;">실명·연락처·주소는 넣지 마세요. GitHub Pages는 <b>누구나 볼 수 있는 공개 웹</b>입니다.</p>
+      </div>
+      <div class="card a3">
+        <h3 style="font-size:18px;">편향을 의심</h3>
+        <p style="font-size:15px;">AI의 답은 다수의 목소리에 가깝습니다. 우리가 돕고 싶은 사람은 대개 소수입니다.</p>
+      </div>
+      <div class="card a1">
+        <h3 style="font-size:18px;">모르는 코드는 남기지 않기</h3>
+        <p style="font-size:15px;">발표에서 "이건 AI가 해줬어요"라고 말하게 됩니다. 한 줄씩 물어보며 이해하세요.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 체크리스트 ============ -->
+<section id="missions">
+  <div class="wrap">
+    <p class="eyebrow yellow reveal">06. 실행</p>
+    <h2 class="title reveal">오늘의 체크리스트</h2>
+    <p class="lead reveal">
+      순서대로 따라가면 제출까지 도달합니다. 배포는 <b>GitHub Pages 하나</b>만 씁니다.
+      체크 상태는 이 브라우저에 자동 저장됩니다.
+    </p>
+
+    <div class="progress-wrap reveal">
+      <b id="progressText">0 / 0 완료</b>
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="진행률"><i id="progressFill"></i></div>
+      <button id="clearChecks" type="button">전체 해제</button>
+    </div>
+
+    <div id="checklist" class="check-grid reveal"></div>
+
+    <div class="card reveal" style="margin-top:24px; background:var(--c-yellow-light); border-color:#F2D89B;">
+      <h3 style="font-size:19px;">막혔을 때</h3>
+      <p style="color:#5C4200;">
+        시간이 부족하면 <b>기능을 늘리지 말고 줄이세요.</b> 화면 하나가 제대로 도는 편이,
+        여러 화면이 어정쩡한 것보다 훨씬 좋은 결과물입니다.
+        그리고 <b>실패한 기록도 하나의 성공적인 결과물</b>입니다. 안 된 것을 말하는 발표가 가장 도움이 됩니다.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 일정 ============ -->
+<section id="timeline" class="alt">
+  <div class="wrap">
+    <p class="eyebrow green reveal">07. 진행</p>
+    <h2 class="title reveal">오늘의 진행표</h2>
+    <p class="lead reveal">
+      시간은 현장 상황에 맞게 조정합니다. 다만 두 시각은 고정입니다 —
+      <b>15:00 제출 마감</b>, <b>15:00 발표 시작(팀당 3분)</b>.
+      그래서 14:30에는 어떤 상태든 일단 배포되어 있어야 합니다.
+    </p>
+    <div class="timeline reveal" id="timelineList"></div>
+  </div>
+</section>
+
+<!-- ============ 자료실 ============ -->
+<section id="resources">
+  <div class="wrap">
+    <p class="eyebrow reveal">08. 자료실</p>
+    <h2 class="title reveal">배포와 데이터</h2>
+    <p class="lead reveal">배포는 GitHub Pages 하나로 끝냅니다. 그리고 문제를 <b>주장</b>이 아니라 <b>근거</b>로 말하려면 데이터가 필요합니다.</p>
+
+    <div class="card reveal" style="border-color:var(--c-primary); box-shadow:var(--shadow-md);">
+      <h3>GitHub Pages 배포 4단계</h3>
+      <ol class="deploy-steps" style="margin-top:18px;">
+        <li>GitHub에서 <b>새 저장소(Repository)</b>를 만듭니다. 공개(Public)로 만들어야 합니다.</li>
+        <li>만든 <code>index.html</code>과 <code>pre.html</code>을 저장소에 <b>업로드</b>합니다. (Add file → Upload files)</li>
+        <li>저장소의 <b>Settings → Pages</b>에서 Source를 <code>Deploy from a branch</code>, 브랜치를 <code>main / (root)</code>으로 지정하고 Save.</li>
+        <li>1~2분 뒤 <code>https://아이디.github.io/저장소이름/</code> 으로 접속해봅니다. 발표자료는 뒤에 <code>pre.html</code>을 붙이면 됩니다.</li>
+      </ol>
+      <p class="muted" style="margin-top:18px;">
+        ⚠ 파일 이름은 반드시 <code>index.html</code> 이어야 첫 화면으로 열립니다.
+        제출 전에 <b>내 휴대폰이나 옆 사람 기기</b>로 링크를 한 번 열어보세요. 안 열리면 없는 프로젝트입니다.
+      </p>
+    </div>
+
+    <h3 class="sub-h reveal">공공데이터 · 통계</h3>
+    <div class="grid grid-3 reveal">
+      <a class="link-card" href="https://www.data.go.kr/" target="_blank" rel="noopener">
+        <b>공공데이터포털</b><span>정부·지자체 데이터와 오픈 API</span>
+      </a>
+      <a class="link-card" href="https://data.seoul.go.kr/" target="_blank" rel="noopener">
+        <b>서울열린데이터광장</b><span>생활·교통·안전 지역 데이터</span>
+      </a>
+      <a class="link-card" href="https://kosis.kr/" target="_blank" rel="noopener">
+        <b>KOSIS 국가통계포털</b><span>인구·복지·경제 공식 통계</span>
+      </a>
+      <a class="link-card" href="https://www.epeople.go.kr/" target="_blank" rel="noopener">
+        <b>국민신문고</b><span>실제 시민 민원 — 문제의 보고</span>
+      </a>
+      <a class="link-card" href="https://www.airkorea.or.kr/" target="_blank" rel="noopener">
+        <b>에어코리아</b><span>실시간 대기질 측정 데이터</span>
+      </a>
+      <a class="link-card" href="https://www.localdata.go.kr/" target="_blank" rel="noopener">
+        <b>지방행정 인허가데이터</b><span>우리 동네 가게·시설 정보</span>
+      </a>
+    </div>
+
+    <h3 class="sub-h reveal">만들기 도구</h3>
+    <div class="grid grid-3 reveal">
+      <a class="link-card" href="https://pages.github.com/" target="_blank" rel="noopener">
+        <b>GitHub Pages</b><span>오늘 쓰는 유일한 배포 방법</span>
+      </a>
+      <a class="link-card" href="https://github.com/" target="_blank" rel="noopener">
+        <b>GitHub</b><span>저장소 만들고 파일 올리기</span>
+      </a>
+      <a class="link-card" href="https://code.visualstudio.com/" target="_blank" rel="noopener">
+        <b>VS Code</b><span>요구사항.md와 파일 편집</span>
+      </a>
+      <a class="link-card" href="https://claude.ai/" target="_blank" rel="noopener">
+        <b>Claude</b><span>요구사항 다듬기 · 파일 생성</span>
+      </a>
+      <a class="link-card" href="https://excalidraw.com/" target="_blank" rel="noopener">
+        <b>Excalidraw</b><span>화면 구성 빠르게 그려보기</span>
+      </a>
+      <a class="link-card" href="https://weniv.co.kr/" target="_blank" rel="noopener">
+        <b>위니브</b><span>강의 자료와 학습 서비스</span>
+      </a>
+    </div>
+
+    <div class="card reveal" style="margin-top:36px; background:var(--c-surface);">
+      <h3>마지막으로, 기억해주세요</h3>
+      <p style="max-width:74ch;">
+        오늘 여러분의 결과물이 얼마나 경쟁력 있는지 판단하지 않습니다.
+        우리는 사업가가 아니기 때문에, <b>실패한 기록도 하나의 성공적인 결과물</b>입니다.
+        혼자 성장하지 마세요. 공유하면 더 많은 동료를 얻을 수 있어요.
+        별것 아닌 한 기능이라도, 뒤따라 오는 분들을 위해 어떤 식으로든 지식을 공유해주세요.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ 푸터 ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <svg class="logo-f" viewBox="0 0 142 32" role="img" aria-label="weniv"><use href="#weniv-logo"/></svg>
+        <h4>우리는, 시빅해커</h4>
+        <p>
+          2020년 <b>Microcosm SW Fair — 경쟁없는, 나만의 시빅해킹 SW Fair</b> 강의자료를
+          AI 시대의 반나절 해커톤 과정으로 다시 구성한 자료입니다.
+        </p>
+        <p>누구나, 어떠한 제약없이 사용할 수 있는 비영리 저작물입니다.</p>
+      </div>
+      <div>
+        <h4>문의 · 결과물 공유</h4>
+        <p>내용 수정이 필요하시면 <a href="mailto:paul-lab@naver.com">paul-lab@naver.com</a> 으로 연락주세요.</p>
+        <p>완성한 프로젝트 링크를 보내주시면 더 많은 곳에 알려드립니다.</p>
+        <p><a href="https://weniv.co.kr/" target="_blank" rel="noopener">weniv.co.kr</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      © weniv. 비영리 목적의 자유로운 사용 · 수정 · 재배포를 환영합니다.
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop" aria-label="맨 위로 이동">↑</button>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     데이터: 6단계
+     ============================================================ */
+  var STAGES = [
+    {
+      key:"discover", short:"문제 발견", title:"질문에서 시작합니다", time:"약 30분",
+      goal:"해결책부터 떠올리지 않습니다. 불편했던 '장면'을 20개 적고, 그중 3개를 고릅니다.",
+      keys:[
+        "<b>좋은 해결책은 좋은 호기심과 질문에서 비롯됩니다.</b> 아이디어가 아니라 장면을 적으세요 — \"○○할 때 △△가 불편했다.\"",
+        "지극히 개인적인 문제여도 괜찮습니다. 그것은 여러분만의 문제가 아니거든요.",
+        "\"원래 그런 것\"이라고 넘겼던 것들을 다시 보세요. <b>모든 것을 의심하는 것이 이곳의 규칙입니다.</b>",
+        "잘 떠오르지 않으면 오늘 아침부터 지금까지를 되짚어 보세요. 등굣길, 급식실, 버스, 병원, 관공서 안내문."
+      ],
+      ai:[
+        "내 동네·학교 이름과 관심 분야를 주고 <b>반복해서 나오는 민원·불만 주제</b>를 정리해달라고 요청하기 (사실 확인은 내가)",
+        "문제 한 문장을 쓰고 <b>“왜?를 다섯 번 반복해서 진짜 원인까지 파고들어줘”</b> 요청하기",
+        "AI에게 문제 당사자 역할을 맡겨 인터뷰 예행연습하기 — 단, 진짜 사람에게 한 번은 물어보기"
+      ],
+      tools:["국민신문고","공공데이터포털","학교·동네 게시판","직접 관찰 메모"],
+      missions:[
+        "불편했던 장면을 20개 적는다 (나 → 가족 → 이웃 → 지역 순으로 넓히며)",
+        "그중 3개를 고르고, 왜 골랐는지 한 문장씩 쓴다"
+      ]
+    },
+    {
+      key:"narrow", short:"주제 좁히기", title:"거대한 것 말고, 오늘 할 수 있는 것", time:"약 20분",
+      goal:"문샷 씽킹이 아니라 미노베이션. 반나절 안에 웹페이지 한 장으로 표현되는 크기까지 자릅니다.",
+      keys:[
+        "<b>혁신이 아니라 혁신적 실행력.</b> 사소한 변화들의 축적이 거대한 물결을 만듭니다.",
+        "오늘 만들 것은 <b>웹페이지 한 장</b>입니다. 서버도, 로그인도, 데이터베이스도 없습니다. 그 안에서 해결할 방법을 찾으세요.",
+        "스스로에게 물어보세요 — <b>혜택을 받을 사람은 누구인가? 그 사람이 이 페이지를 3초 보고 무엇을 얻는가? 지금 할 수 있는 가장 작은 일은 무엇인가?</b>",
+        "여러분이 고르려는 주제는 <b>누군가 꼭 해결해보려 했던 주제</b>입니다. 먼저 검색하세요. 이미 있다면, 그것보다 나은 점 딱 하나만 정하면 됩니다."
+      ],
+      ai:[
+        "<b>“이 아이디어를 반대하는 사람 입장에서 가장 아픈 지적 5가지”</b>를 요청해 약점을 먼저 확인하기",
+        "<b>“이걸 웹페이지 한 장으로 만든다면 반드시 있어야 할 기능 1개는 무엇일까?”</b> 물어보기",
+        "비슷한 서비스가 이미 있는지 찾아보고, 없는 칸이 무엇인지 표로 정리하기"
+      ],
+      tools:["3축 점검 도구","검색","AI 대화"],
+      missions:[
+        "주제 하나를 정하고 위의 3축 점검으로 확인한다",
+        "\"누구의 / 어떤 불편을 / 무엇으로 줄인다\"를 한 문장으로 쓴다"
+      ]
+    },
+    {
+      key:"spec", short:"요구사항.md", title:"벽돌부터 쌓지 마세요", time:"약 40분",
+      goal:"프로젝트 폴더를 만들고, 그 안에 요구사항.md 를 씁니다. 오늘 여러분이 직접 쓰는 유일한 파일입니다.",
+      keys:[
+        "폴더 하나를 만들고 그 안에 <code>요구사항.md</code> 를 만드세요. 코드는 나중입니다.",
+        "세 가지가 반드시 있어야 합니다 — <b>목적</b>(왜, 누구를 위해) · <b>기능</b>(무엇이 보이고 무엇이 동작하는지) · <b>제약</b>(색·글자 크기·모바일·하지 말 것).",
+        "기능은 \"예쁘게\"가 아니라 <b>\"버튼을 누르면 무엇이 바뀐다\"</b>로 쓰세요. AI는 확인 가능한 문장만 정확히 구현합니다.",
+        "만들지 <b>않을</b> 것도 적으세요. 제약이 없으면 AI는 필요 없는 것까지 만들어 시간을 잡아먹습니다.",
+        "발표자료(<code>pre.html</code>)에 대한 요구도 같이 적어두세요. 몇 장인지, 어떤 순서인지."
+      ],
+      ai:[
+        "이 단계에서는 AI에게 <b>대신 쓰게 하지 마세요.</b> 초안은 내 언어로, 어색해도 내가 씁니다.",
+        "떠오르지 않는 항목만 <b>“이런 서비스라면 어떤 제약을 적어야 할까?”</b> 처럼 부분적으로 물어보기",
+        "다 쓴 뒤 <b>“한국어 맞춤법과 문장만 다듬어줘. 내용은 바꾸지 마.”</b> 로 정리하기"
+      ],
+      tools:["VS Code","메모장","GitHub","요구사항.md 템플릿"],
+      missions:[
+        "프로젝트 폴더와 요구사항.md 파일을 만든다",
+        "목적 · 기능 · 제약 세 항목을 내 언어로 채운다"
+      ]
+    },
+    {
+      key:"refine", short:"고도화", title:"AI에게 먼저 공격받기", time:"약 20분",
+      goal:"쓴 요구사항을 AI에게 읽히고, 빈틈과 모호한 문장을 찾아 다시 씁니다.",
+      keys:[
+        "AI에게 물으세요 — <b>“이 요구사항만 보고 만들면 어디서 막힐 것 같아?”</b> 그 대답이 곧 여러분이 빠뜨린 부분입니다.",
+        "모호한 말을 지우세요. <b>\"사용자 친화적으로\", \"직관적으로\", \"적절히\"</b> 는 구현할 수 없는 문장입니다.",
+        "고도화는 늘리는 일이 아니라 <b>자르는 일</b>이기도 합니다. 오늘 못 할 기능은 \"이번엔 안 함\"에 옮기세요.",
+        "AI가 제안한 문장이라도 <b>내가 이해 못 한 것은 지우세요.</b> 발표 때 설명할 수 없는 기능은 내 기능이 아닙니다."
+      ],
+      ai:[
+        "요구사항.md 전문을 붙여넣고 <b>“모호해서 구현 방법이 갈리는 문장을 전부 찾아 표시해줘”</b> 요청하기",
+        "<b>“빠진 항목이 있다면 질문 형태로만 물어봐줘. 대신 채우지 마.”</b> 로 스스로 답을 채우기",
+        "<b>“반나절 안에 못 끝낼 것 같은 기능을 골라내고 이유를 말해줘”</b> 로 범위 줄이기"
+      ],
+      tools:["Claude","요구사항.md"],
+      missions:[
+        "AI에게 요구사항.md 를 읽히고 빈틈 지적을 받는다",
+        "모호한 문장을 확인 가능한 문장으로 고쳐 저장한다"
+      ]
+    },
+    {
+      key:"build", short:"만들기", title:"index.html 과 pre.html", time:"약 90분",
+      goal:"다듬어진 요구사항.md 로 두 파일을 만들고, 직접 열어보며 고칩니다.",
+      keys:[
+        "이렇게 입력하세요 — <b>「요구사항.md를 읽고 index.html과 발표자료 pre.html을 작성해줘」</b>",
+        "<code>index.html</code> 은 문제 해결 결과물, <code>pre.html</code> 은 3분 발표용 자료입니다. <b>둘 다 필요합니다.</b>",
+        "받은 즉시 브라우저로 열어보세요. <b>화면을 보지 않고 고치는 것은 상상으로 고치는 것</b>입니다.",
+        "고칠 때는 한 번에 하나씩, 구체적으로. <b>\"어디의 무엇을 어떻게\"</b> 를 말해야 나머지가 망가지지 않습니다.",
+        "휴대폰 크기에서도 확인하세요. 브라우저 창을 좁게 줄여보기만 해도 대부분 보입니다."
+      ],
+      ai:[
+        "결과가 마음에 안 들면 코드가 아니라 <b>요구사항.md 를 고쳐서 다시 요청</b>하기",
+        "에러가 나면 <b>“원인 후보 3가지와 각각을 내가 확인하는 방법”</b> 을 먼저 요청하기 (바로 고친 코드를 받지 않기)",
+        "이해 안 되는 부분은 <b>“이 부분이 무슨 일을 하는지 한 문장으로 설명해줘”</b> 라고 묻기"
+      ],
+      tools:["Claude API (위니브 지급)","VS Code","브라우저"],
+      missions:[
+        "index.html 과 pre.html 초안을 받는다",
+        "브라우저로 직접 열어보고, 어색한 부분과 모바일 화면을 고친다"
+      ]
+    },
+    {
+      key:"deploy", short:"배포 · 발표", title:"링크 하나로 말하기", time:"약 30분 + 발표",
+      goal:"GitHub Pages에 올려 접속되는 URL을 만들고, 마감 시각까지 제출한 뒤 3분간 이야기합니다.",
+      keys:[
+        "제출물은 <b>GitHub Pages URL 하나</b>입니다. 링크가 열리지 않으면 없는 프로젝트입니다. 다른 기기로 꼭 한 번 열어보세요.",
+        "저장소를 만들고 파일을 올린 뒤 <b>Settings → Pages</b> 에서 브랜치를 지정하면 끝입니다. 반영까지 1~2분 걸리니 마감 직전에 하지 마세요.",
+        "발표 3분 구성 — <b>불편했던 장면(1분) / 만든 화면 보여주기(1분) / 배운 것과 실패한 것(1분).</b>",
+        "잘 된 것보다 <b>안 된 것</b>을 말해주세요. 그게 다음 사람에게 가장 큰 도움이 됩니다.",
+        "경쟁이 아닙니다. 여러분을 평가할 사람은 없습니다."
+      ],
+      ai:[
+        "<b>“이 서비스를 처음 본 사람이 3초 안에 이해할까?”</b> 를 기준으로 첫 화면 문구 다듬기",
+        "요구사항.md 와 결과물을 주고 <b>3분 발표 대본</b>을 만들어달라고 한 뒤, 내 말투로 고치기",
+        "<b>“내가 이 프로젝트에서 놓치고 있는 배움은 무엇일까?”</b> 되물어 회고 정리하기"
+      ],
+      tools:["GitHub","GitHub Pages","구글 폼(제출)"],
+      missions:[
+        "GitHub Pages로 배포하고 링크가 열리는지 다른 기기에서 확인한다",
+        "마감 시각까지 제출하고, 3분 발표를 소리 내어 한 번 연습한다"
+      ]
+    }
+  ];
+
+  /* ============================================================
+     데이터: 주제 찾기
+     ============================================================ */
+  var DOMAINS = [
+    {id:"env",   label:"환경·기후"},
+    {id:"move",  label:"교통·이동"},
+    {id:"care",  label:"복지·돌봄"},
+    {id:"edu",   label:"교육·학습"},
+    {id:"safe",  label:"안전·재난"},
+    {id:"animal",label:"동물·생태"},
+    {id:"local", label:"지역·공동체"},
+    {id:"health",label:"건강·의료"},
+    {id:"a11y",  label:"정보 접근성"}
+  ];
+  var SCOPES = [
+    {id:"me",     label:"나"},
+    {id:"family", label:"가족"},
+    {id:"town",   label:"이웃·학교"},
+    {id:"city",   label:"지역"},
+    {id:"nation", label:"국가·세계"}
+  ];
+  var SCOPE_LABEL = {me:"나", family:"가족", town:"이웃·학교", city:"지역", nation:"국가·세계"};
+
+  var TOPICS = {
+    env:[
+      {t:"헷갈리는 분리배출 품목을 검색 한 번으로 알려주는 페이지", scope:"me",
+       ai:"품목별 배출 규정을 정리하게 하고, 검색하면 해당 항목만 남는 화면을 만듭니다.", data:"우리 지자체 분리배출 안내 페이지, 환경부 자료"},
+      {t:"교실·집에서 새는 에너지를 스스로 점검하는 체크리스트", scope:"town",
+       ai:"점검 항목을 만들고, 체크한 개수에 따라 조언 문구가 바뀌게 합니다.", data:"한국에너지공단 절약 수칙, 직접 측정한 기록"},
+      {t:"대기질이 나쁜 날 무엇을 해야 하는지 큰 글씨로 알려주기", scope:"city",
+       ai:"등급별 행동 요령을 어르신도 이해할 문장으로 바꿔 카드 형태로 보여줍니다.", data:"에어코리아 대기질 등급 기준"}
+    ],
+    move:[
+      {t:"휠체어·유아차로 갈 수 있는 우리 학교 주변 길 안내", scope:"town",
+       ai:"직접 조사한 턱·계단 정보를 정리해 경로별 난이도를 표시하게 합니다.", data:"직접 촬영·조사, 공공데이터포털 보행 환경 데이터"},
+      {t:"우리 통학로에서 가장 위험한 지점 3곳 알리기", scope:"town",
+       ai:"사고 통계와 직접 관찰 내용을 묶어 위험 이유를 설명하는 문장으로 만듭니다.", data:"도로교통공단 TAAS 사고 통계, 어린이보호구역 데이터"},
+      {t:"막차를 놓쳤을 때 지금 뭘 해야 하는지 알려주는 한 장", scope:"city",
+       ai:"상황별 선택지를 정리해 질문 몇 개에 답하면 답이 나오게 구성합니다.", data:"지자체 심야버스 노선, 대중교통 운행 정보"}
+    ],
+    care:[
+      {t:"혼자 계신 조부모님께 필요한 정보만 큰 글씨로 모아드리기", scope:"family",
+       ai:"복잡한 안내를 짧고 쉬운 문장으로 바꾸고 글자 크기를 크게 설계합니다.", data:"직접 인터뷰, 지자체 어르신 지원 안내"},
+      {t:"복잡한 복지 제도 중 '나에게 해당되는 것'만 골라주기", scope:"nation",
+       ai:"질문 몇 개에 답하면 해당 제도만 남는 필터 화면을 만듭니다.", data:"복지로 서비스 목록, 공공데이터포털 복지사업 데이터"},
+      {t:"돌보는 사람(가족)을 위한 기록·인수인계 서식 만들기", scope:"family",
+       ai:"기록해야 할 항목을 뽑고, 병원에 낼 요약 문서 형태로 정리합니다.", data:"직접 설계한 설문, 가족 돌봄 관련 자료"}
+    ],
+    edu:[
+      {t:"내가 이해하지 못한 부분을 스스로 찾아내는 학습 점검 페이지", scope:"me",
+       ai:"내가 쓴 요약에서 빠진 개념을 짚는 질문 목록을 만들어 둡니다.", data:"내 필기·오답 기록"},
+      {t:"교과서 어려운 말을 쉬운 말로 바꿔 보여주는 대조표", scope:"town",
+       ai:"어려운 문장을 쉬운 한국어로 바꾸고 원문과 나란히 보여줍니다.", data:"국립국어원 쉬운 우리말 자료, 실제 교과서 문장"},
+      {t:"우리 지역에서 무료로 들을 수 있는 프로그램 한곳에 모으기", scope:"city",
+       ai:"흩어진 공지를 대상·기간·신청 방법으로 통일해 표로 만듭니다.", data:"지자체 평생학습관·도서관 공지"}
+    ],
+    safe:[
+      {t:"밤길이 어두운 골목을 모아 지도 대신 목록으로 알리기", scope:"town",
+       ai:"제보 내용을 위험 유형별로 묶고 민원 문구 초안까지 만들어 둡니다.", data:"가로등 위치 공공데이터, 직접 조사"},
+      {t:"재난 문자에서 '지금 해야 할 행동'만 뽑아 보여주기", scope:"nation",
+       ai:"긴 문자를 상황별로 분류해 행동 3가지로 요약한 카드로 바꿉니다.", data:"행정안전부 국민행동요령"},
+      {t:"보도블록 파손·공사장 위험을 신고하는 방법 한 장 정리", scope:"city",
+       ai:"신고 절차를 단계별로 정리하고 신고서 문구 예시를 만들어 둡니다.", data:"국민신문고 민원 유형, 지자체 도로 관리 안내"}
+    ],
+    animal:[
+      {t:"우리 동네 길고양이 급식소 위치와 돌봄 규칙 공유하기", scope:"town",
+       ai:"돌봄 시 지켜야 할 규칙을 정리하고 초보자용 안내로 다시 씁니다.", data:"지자체 동물보호 조례, 직접 조사"},
+      {t:"입양을 고민하는 사람을 위한 현실 점검 질문지", scope:"nation",
+       ai:"비용·시간·주거 조건 질문을 만들고 답에 따라 조언이 달라지게 합니다.", data:"동물보호관리시스템 공고, 입양 안내 자료"},
+      {t:"도시 새들의 유리창 충돌을 줄이는 방법 알리기", scope:"city",
+       ai:"원인과 대응 방법을 쉬운 설명과 그림 배치로 재구성합니다.", data:"국립생태원 야생조류 충돌 조사 자료"}
+    ],
+    local:[
+      {t:"우리 동네 가게 영업시간이 실제와 다른 문제 바로잡기", scope:"town",
+       ai:"직접 조사한 정보를 표로 정리하고 확인 날짜를 함께 보여줍니다.", data:"지방행정 인허가데이터, 직접 조사"},
+      {t:"1인 가구가 함께 사면 좋은 물건을 나누는 안내 페이지", scope:"town",
+       ai:"품목 분류와 나눔 규칙을 정리하고 신청 서식을 만들어 둡니다.", data:"통계청 1인 가구 통계, 직접 설문"},
+      {t:"지역 행사 정보를 어르신도 볼 수 있게 큰 글씨로 다시 만들기", scope:"city",
+       ai:"포스터 내용을 핵심만 뽑아 큰 글씨 카드로 재구성합니다.", data:"한국관광공사 축제 정보, 지자체 행사 공지"}
+    ],
+    health:[
+      {t:"약 복용법을 쉬운 말로 바꿔 정리해두는 페이지", scope:"family",
+       ai:"복약 안내 문구를 쉬운 문장으로 바꾸고 시간대별로 정리합니다.", data:"식약처 의약품 개요 정보 ※ 진단이 아닌 정리 용도"},
+      {t:"우리 동네에서 지금 갈 수 있는 병원·약국 찾기", scope:"city",
+       ai:"진료 시간·과목 정보를 정리해 조건에 맞는 곳만 남기게 합니다.", data:"건강보험심사평가원 병원·약국 정보"},
+      {t:"청소년 마음 건강, 어디에 물어봐야 하는지 알려주기", scope:"me",
+       ai:"상담 창구를 상황별로 분류해 안내합니다. 진단이 아니라 연결이 목적입니다.", data:"보건복지부·청소년상담복지센터 창구 정보"}
+    ],
+    a11y:[
+      {t:"우리 학교 홈페이지에서 접근성이 막힌 곳 찾아 알리기", scope:"town",
+       ai:"점검 항목을 만들고, 발견한 문제를 개선 요청 문서로 정리합니다.", data:"한국형 웹 콘텐츠 접근성 지침(KWCAG)"},
+      {t:"공공기관 안내문을 쉬운 우리말로 다시 쓰기", scope:"nation",
+       ai:"행정 용어를 쉬운 말로 바꾸고, 바꾼 이유까지 함께 보여줍니다.", data:"국립국어원 쉬운 우리말 사전, 실제 공문 예시"},
+      {t:"영상에 자막이 없어 못 보는 사람을 위한 자막 만들기 안내", scope:"city",
+       ai:"자막 제작 절차와 품질 기준을 초보자용 단계 안내로 정리합니다.", data:"직접 수집한 지역 공공 영상, 자막 가이드"}
+    ]
+  };
+
+  /* ============================================================
+     데이터: 요구사항.md 템플릿
+     ============================================================ */
+  var SPEC_TEMPLATE =
+"# [프로젝트 이름]\n" +
+"\n" +
+"## 목적\n" +
+"- 어떤 문제: [○○할 때 △△가 불편하다]\n" +
+"- 누구를 위해: [이 문제를 겪는 사람 한 명을 구체적으로]\n" +
+"- 이 페이지를 보고 나면: [그 사람이 얻는 것 딱 한 가지]\n" +
+"\n" +
+"## 기능\n" +
+"1. 첫 화면 맨 위에 [무엇]과 [안내 문장 한 줄]이 보인다.\n" +
+"2. [버튼/입력창]을 [누르면/입력하면] [무엇이] 바뀐다.\n" +
+"3. [자료]를 [목록/카드/표] 형태로 보여준다. 항목마다 [무엇]을 표시한다.\n" +
+"4. 맨 아래에 [출처와 조사 날짜]를 적는다.\n" +
+"\n" +
+"## 이번에 만들지 않는 것\n" +
+"- 로그인, 회원가입, 서버 저장, 결제\n" +
+"- [그 밖에 오늘 포기할 기능]\n" +
+"\n" +
+"## 제약\n" +
+"- 파일은 index.html 한 장으로 끝낸다. 외부 라이브러리를 쓰지 않는다.\n" +
+"- 모바일 세로 화면(폭 390px)에서 가로 스크롤이 생기지 않는다.\n" +
+"- 색은 메인 [#2E6FF2] 하나와 강조 [#FFC533] 하나만 쓴다.\n" +
+"- 글자는 16px 이상, 문장은 [중학생/어르신]도 읽을 수 있는 쉬운 말로 쓴다.\n" +
+"- 개인정보(실명·연락처·주소)는 넣지 않는다.\n" +
+"\n" +
+"## 발표자료 (pre.html)\n" +
+"- 5장 내외, 방향키로 넘어가는 한 파일로 만든다.\n" +
+"- 순서: 불편했던 장면 → 문제 한 문장 → 만든 화면 → 배운 것 / 실패한 것\n" +
+"- 발표 시간은 3분이다. 장당 말할 내용을 아래에 메모로 넣어준다.\n";
+
+  /* ============================================================
+     데이터: 프롬프트 · 일정
+     ============================================================ */
+  var PROMPTS = [
+    {title:"① 문제를 날카롭게 다듬기",
+     body:"나는 [고등학생]이고, [우리 학교 앞 횡단보도에서 신호가 짧아 겪는 불편]을 문제로 잡았어.\n\n1. 이 문제를 한 문장으로 다시 정의해줘.\n2. 이 문제로 가장 크게 불편을 겪는 사람 3명의 후보를 들어줘.\n3. 각 후보에게 물어볼 인터뷰 질문을 3개씩 만들어줘.\n\n추측이 섞였다면 어디가 추측인지 표시해줘."},
+    {title:"② 오늘 크기로 자르기",
+     body:"내 주제: [약 복용법을 쉬운 말로 정리해 보여주는 페이지]\n\n오늘 반나절 안에 index.html 한 장으로 만들려고 해.\n서버, 로그인, 데이터베이스는 쓸 수 없어.\n\n- 반드시 있어야 하는 핵심 기능 1개\n- 있으면 좋은 기능 2개\n- 이번엔 과감히 버릴 기능\n\n이렇게 나눠주고, 핵심 기능만으로도 문제가 해결되는지 판단해줘."},
+    {title:"③ 요구사항.md 빈틈 찾기",
+     body:"아래는 내가 쓴 요구사항.md 야.\n\n[요구사항.md 전문 붙여넣기]\n\n1. 이 요구사항만 보고 만들면 어디서 막힐지 알려줘.\n2. 모호해서 사람마다 다르게 구현할 문장을 전부 찾아 표시해줘.\n3. 반나절 안에 못 끝낼 것 같은 기능을 골라내고 이유를 말해줘.\n\n내용을 대신 채우지는 말고, 질문 형태로만 알려줘."},
+    {title:"④ 두 파일 만들기",
+     body:"요구사항.md를 읽고 index.html과 발표자료 pre.html을 작성해줘.\n\n- index.html: 요구사항의 기능을 모두 담은 한 장짜리 페이지\n- pre.html: 방향키로 넘기는 5장 내외의 발표자료\n- 외부 라이브러리 없이, 모바일에서도 깨지지 않게"},
+    {title:"⑤ 한 곳만 정확히 고치기",
+     body:"지금 index.html에서 [상단 검색창] 부분만 고치고 싶어.\n\n- 지금 상태: [입력해도 목록이 안 바뀐다]\n- 원하는 상태: [입력할 때마다 목록이 즉시 걸러진다]\n\n다른 부분은 절대 바꾸지 말고, 고쳐야 할 부분만 알려줘.\n왜 그렇게 고치는지 한 문장으로 설명도 붙여줘."},
+    {title:"⑥ 3분 발표 대본 만들기",
+     body:"아래 요구사항.md와 내가 만든 결과물을 참고해서 3분 발표 대본을 써줘.\n\n[요구사항.md 붙여넣기]\n\n구성은 이렇게 해줘.\n1분: 어떤 장면이 불편했는지 (내 경험으로)\n1분: 무엇을 만들었는지 (화면을 보여주며)\n1분: 배운 것과 잘 안 된 것\n\n과장하지 말고, 실패한 부분도 솔직하게 담아줘."}
+  ];
+
+  var SCHEDULE = [
+    {time:"10:00", tag:"오리엔테이션", title:"우리는 왜 여기 모였나", desc:"시빅해킹의 의미와 오늘의 규칙 — 아무도 여러분을 평가하지 않습니다. 만들 것 2개, 제출 1개."},
+    {time:"10:15", tag:"1단계", title:"불편했던 장면 20개 적기", desc:"해결책 말고 장면을 적습니다. 나 → 가족 → 이웃 → 지역으로 넓혀갑니다."},
+    {time:"10:45", tag:"2단계", title:"주제 하나로 좁히기", desc:"3축 점검으로 오늘 안에 되는 크기인지 확인합니다. AI에게 먼저 공격받아 봅니다."},
+    {time:"11:05", tag:"3단계", title:"요구사항.md 작성", desc:"프로젝트 폴더를 만들고 목적 · 기능 · 제약을 내 언어로 씁니다. 오늘의 핵심 시간입니다."},
+    {time:"11:45", tag:"4단계", title:"AI로 요구사항 고도화", desc:"빈틈과 모호한 문장을 찾아 고칩니다. 기능을 늘리지 말고 자릅니다."},
+    {time:"12:00", tag:"점심", title:"점심 식사", desc:"밥 먹으면서 팀원에게 자기 주제를 한 문장으로 설명해보세요. 안 통하면 다시 좁힐 때입니다."},
+    {time:"13:00", tag:"5단계", title:"index.html · pre.html 만들기", desc:"「요구사항.md를 읽고 index.html과 발표자료 pre.html을 작성해줘」 — 받은 즉시 브라우저로 열어봅니다."},
+    {time:"14:00", tag:"5단계", title:"직접 열어보고 다듬기", desc:"한 번에 한 곳씩 고칩니다. 휴대폰 크기에서도 확인합니다. 기능을 늘리지 않습니다."},
+    {time:"14:30", tag:"6단계", title:"GitHub Pages 배포", desc:"저장소 생성 → 파일 업로드 → Settings의 Pages 설정. 반영에 1~2분 걸리니 여유를 두세요.", mark:true},
+    {time:"14:50", tag:"제출", title:"구글 폼에 URL 제출", desc:"다른 기기로 링크를 한 번 열어본 뒤 제출합니다. 마감은 15:00, 링크가 열려야 제출입니다.", mark:true},
+    {time:"15:00", tag:"발표", title:"팀당 3분 발표", desc:"불편했던 장면 1분 / 만든 화면 1분 / 배운 것과 실패한 것 1분.", mark:true},
+    {time:"이후", tag:"마무리", title:"계속하기 위한 약속", desc:"다음 한 달의 아주 작은 계획 하나를 정하고, 만든 링크를 주변에 공유합니다."}
+  ];
+
+  /* ============================================================
+     데이터: 체크리스트
+     ============================================================ */
+  var CHECKS = [
+    {g:"1. 준비", items:[
+      "해결하고 싶은 문제를 한 문장으로 적었다",
+      "프로젝트 폴더를 만들었다",
+      "폴더 안에 요구사항.md 파일을 만들었다"
+    ]},
+    {g:"2. 요구사항.md 작성", items:[
+      "목적 — 어떤 문제를 누구를 위해 푸는지 적었다",
+      "기능 — 무엇이 보이고 무엇을 누르면 무엇이 바뀌는지 적었다",
+      "제약 — 색·글자 크기·모바일·개인정보 금지 등을 적었다",
+      "이번에 만들지 않을 기능을 적었다"
+    ]},
+    {g:"3. 고도화", items:[
+      "AI에게 요구사항.md를 읽히고 빈틈 지적을 받았다",
+      "\"직관적으로\" 같은 모호한 문장을 고쳤다",
+      "오늘 못 할 기능을 잘라냈다"
+    ]},
+    {g:"4. 만들기", items:[
+      "「요구사항.md를 읽고 index.html과 발표자료 pre.html을 작성해줘」로 초안을 받았다",
+      "브라우저로 직접 열어보고 어색한 부분을 고쳤다",
+      "휴대폰 크기 화면에서도 깨지지 않는지 확인했다",
+      "pre.html이 방향키로 넘어가고 3분 안에 끝나는지 확인했다"
+    ]},
+    {g:"5. 배포 · 제출", items:[
+      "GitHub 저장소에 index.html과 pre.html을 올렸다",
+      "Settings → Pages 를 설정하고 URL이 열리는지 확인했다",
+      "다른 기기(휴대폰)에서도 링크가 열렸다",
+      "마감 시각까지 구글 폼에 URL을 제출했다",
+      "3분 발표를 소리 내어 한 번 연습했다"
+    ]}
+  ];
+
+  var $  = function(s, el){ return (el||document).querySelector(s); };
+  var $$ = function(s, el){ return Array.prototype.slice.call((el||document).querySelectorAll(s)); };
+  var esc = function(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); };
+
+  /* ============================================================
+     1) 모바일 네비게이션
+     ============================================================ */
+  var navToggle = $("#navToggle"), nav = $("#nav");
+  navToggle.addEventListener("click", function(){
+    var open = navToggle.getAttribute("aria-expanded") === "true";
+    navToggle.setAttribute("aria-expanded", String(!open));
+    navToggle.setAttribute("aria-label", open ? "메뉴 열기" : "메뉴 닫기");
+    nav.classList.toggle("open", !open);
+  });
+  nav.addEventListener("click", function(e){
+    if(e.target.tagName === "A"){
+      nav.classList.remove("open");
+      navToggle.setAttribute("aria-expanded","false");
+    }
+  });
+
+  /* 스크롤 스파이 */
+  var navLinks = $$(".nav a");
+  var sections = navLinks.map(function(a){ return document.getElementById(a.getAttribute("href").slice(1)); }).filter(Boolean);
+  if("IntersectionObserver" in window && sections.length){
+    var spy = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(!en.isIntersecting) return;
+        navLinks.forEach(function(a){
+          a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id);
+        });
+      });
+    }, {rootMargin:"-45% 0px -50% 0px"});
+    sections.forEach(function(s){ spy.observe(s); });
+  }
+
+  /* ============================================================
+     2) 로드맵
+     ============================================================ */
+  var track = $(".roadmap-track"), panel = $("#stagePanel"), current = 0;
+
+  STAGES.forEach(function(st, i){
+    var b = document.createElement("button");
+    b.className = "step";
+    b.type = "button";
+    b.setAttribute("role","tab");
+    b.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    b.innerHTML = '<span class="dot">' + (i+1) + '</span><span class="label">' + esc(st.short) + '</span>';
+    b.addEventListener("click", function(){ selectStage(i); });
+    b.addEventListener("keydown", function(e){
+      if(e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "ArrowDown" || e.key === "ArrowUp"){
+        e.preventDefault();
+        var dir = (e.key === "ArrowRight" || e.key === "ArrowDown") ? 1 : -1;
+        var next = (i + dir + STAGES.length) % STAGES.length;
+        selectStage(next);
+        track.children[next].focus();
+      }
+    });
+    track.appendChild(b);
+  });
+
+  function selectStage(i){
+    current = i;
+    var st = STAGES[i];
+    Array.prototype.forEach.call(track.children, function(el, idx){
+      el.setAttribute("aria-selected", String(idx === i));
+    });
+    panel.innerHTML =
+      '<div class="stage-head">' +
+        '<span class="stage-num">' + (i+1) + '</span>' +
+        '<h3>' + esc(st.title) + '</h3>' +
+        '<span class="stage-time">' + esc(st.time) + '</span>' +
+      '</div>' +
+      '<p class="stage-goal">' + esc(st.goal) + '</p>' +
+      '<div class="stage-body">' +
+        '<div>' +
+          '<p class="block-title">이 단계의 핵심</p>' +
+          '<ul class="key-list">' + st.keys.map(function(k){ return "<li>" + k + "</li>"; }).join("") + '</ul>' +
+          '<div class="ai-box">' +
+            '<p class="block-title">AI는 이렇게 씁니다</p>' +
+            '<ul>' + st.ai.map(function(a){ return "<li>" + a + "</li>"; }).join("") + '</ul>' +
+          '</div>' +
+          '<p class="block-title">쓰는 도구</p>' +
+          '<div class="tool-chips">' + st.tools.map(function(t){ return '<span class="chip-static">' + esc(t) + '</span>'; }).join("") + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<div class="mission-box">' +
+            '<p class="block-title">이 단계에서 남길 것</p>' +
+            '<ol>' + st.missions.map(function(m){ return "<li>" + esc(m) + "</li>"; }).join("") + '</ol>' +
+            '<p class="publish">끝에 남는 것은 GitHub Pages URL 하나입니다.</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="stage-nav">' +
+        '<button type="button" id="prevStage"' + (i === 0 ? " disabled" : "") + '>← ' + (i === 0 ? "이전 단계" : esc(STAGES[i-1].short)) + '</button>' +
+        '<button type="button" id="nextStage"' + (i === STAGES.length-1 ? " disabled" : "") + '>' + (i === STAGES.length-1 ? "다음 단계" : esc(STAGES[i+1].short)) + ' →</button>' +
+      '</div>';
+
+    var prev = $("#prevStage"), next = $("#nextStage");
+    if(prev) prev.addEventListener("click", function(){ if(current > 0) selectStage(current-1); });
+    if(next) next.addEventListener("click", function(){ if(current < STAGES.length-1) selectStage(current+1); });
+  }
+  selectStage(0);
+
+  /* ============================================================
+     3) 주제 찾기
+     ============================================================ */
+  var selDomains = [], selScopes = [];
+  var domainChips = $("#domainChips"), scopeChips = $("#scopeChips"), results = $("#results");
+
+  DOMAINS.forEach(function(d){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = d.label;
+    b.setAttribute("aria-pressed","false");
+    b.addEventListener("click", function(){
+      var on = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", String(!on));
+      if(on) selDomains = selDomains.filter(function(x){ return x !== d.id; });
+      else selDomains.push(d.id);
+      render();
+    });
+    domainChips.appendChild(b);
+  });
+  SCOPES.forEach(function(s){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip scope"; b.textContent = s.label;
+    b.setAttribute("aria-pressed","false");
+    b.addEventListener("click", function(){
+      var on = b.getAttribute("aria-pressed") === "true";
+      b.setAttribute("aria-pressed", String(!on));
+      if(on) selScopes = selScopes.filter(function(x){ return x !== s.id; });
+      else selScopes.push(s.id);
+      render();
+    });
+    scopeChips.appendChild(b);
+  });
+
+  function topicHTML(item, domainId){
+    var dom = DOMAINS.filter(function(d){ return d.id === domainId; })[0];
+    var matched = selScopes.length && selScopes.indexOf(item.scope) !== -1;
+    return '<article class="topic">' +
+      '<div class="topic-top">' +
+        '<span class="badge">' + esc(dom ? dom.label : "") + '</span>' +
+        '<span class="badge scope">' + esc(SCOPE_LABEL[item.scope]) + '의 문제</span>' +
+        (matched ? '<span class="badge match">★ 고른 범위와 일치</span>' : '') +
+      '</div>' +
+      '<h4>' + esc(item.t) + '</h4>' +
+      '<dl>' +
+        '<div><dt>AI 활용</dt><dd>' + esc(item.ai) + '</dd></div>' +
+        '<div><dt>참고 자료</dt><dd>' + esc(item.data) + '</dd></div>' +
+      '</dl>' +
+    '</article>';
+  }
+
+  function render(){
+    if(!selDomains.length){
+      results.innerHTML = '<p class="empty">분야를 하나 이상 골라주세요. 고민된다면 <b>랜덤으로 하나 뽑기</b>도 좋은 방법입니다.</p>';
+      return;
+    }
+    var list = [];
+    selDomains.forEach(function(id){
+      (TOPICS[id] || []).forEach(function(item){ list.push({item:item, dom:id}); });
+    });
+    if(selScopes.length){
+      list.sort(function(a,b){
+        var am = selScopes.indexOf(a.item.scope) !== -1 ? 0 : 1;
+        var bm = selScopes.indexOf(b.item.scope) !== -1 ? 0 : 1;
+        return am - bm;
+      });
+    }
+    results.innerHTML =
+      '<p class="muted" style="margin:0;">' + list.length + '개의 출발점을 찾았어요. 마음에 드는 문장을 골라 <b>내 언어로 다시 써보세요.</b></p>' +
+      list.map(function(x){ return topicHTML(x.item, x.dom); }).join("");
+  }
+
+  $("#findBtn").addEventListener("click", function(){
+    if(!selDomains.length){
+      selDomains = DOMAINS.map(function(d){ return d.id; });
+      $$(".chip", domainChips).forEach(function(c){ c.setAttribute("aria-pressed","true"); });
+    }
+    render();
+    results.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+
+  $("#randomBtn").addEventListener("click", function(){
+    var pool = [];
+    var keys = selDomains.length ? selDomains : Object.keys(TOPICS);
+    keys.forEach(function(id){ (TOPICS[id]||[]).forEach(function(item){ pool.push({item:item, dom:id}); }); });
+    var pick = pool[Math.floor(Math.random() * pool.length)];
+    results.innerHTML =
+      '<p class="muted" style="margin:0;">오늘의 주제입니다. 마음에 들지 않으면 한 번 더 눌러보세요.</p>' +
+      topicHTML(pick.item, pick.dom);
+    results.scrollIntoView({behavior:"smooth", block:"nearest"});
+  });
+
+  $("#resetBtn").addEventListener("click", function(){
+    selDomains = []; selScopes = [];
+    $$(".chip").forEach(function(c){ c.setAttribute("aria-pressed","false"); });
+    render();
+  });
+
+  /* ============================================================
+     4) 아이디어 3축 점검
+     ============================================================ */
+  var sx = $("#sx"), sy = $("#sy"), sz = $("#sz");
+  function updateScore(){
+    var x = +sx.value, y = +sy.value, z = +sz.value, total = x + y + z;
+    $("#ox").textContent = x; $("#oy").textContent = y; $("#oz").textContent = z;
+    $("#totalNum").textContent = total;
+    $("#bx").style.height = (x*10) + "%";
+    $("#by").style.height = (y*10) + "%";
+    $("#bz").style.height = (z*10) + "%";
+
+    var msg;
+    if(x <= 3 && total >= 18){
+      msg = "마음은 크지만 오늘 안에 손이 닿지 않아요. 주제를 바꾸기 전에 <b>기능을 하나만 남겨</b> 보세요. 지도 대신 목록 하나로도 충분할 수 있습니다.";
+    } else if(z <= 3){
+      msg = "흥미가 낮으면 발표 3분이 아주 길게 느껴집니다. 이 주제를 왜 골랐는지 다시 물어보세요.";
+    } else if(y <= 3){
+      msg = "나에게만 좋은 프로젝트일 수 있어요. 그래도 괜찮습니다. 다만 <b>나 말고 이걸 쓸 사람 한 명</b>만 찾아보세요.";
+    } else if(total >= 24){
+      msg = "좋은 균형입니다. 고민을 멈추고 지금 바로 <b>요구사항.md</b>를 여세요. 오늘 안에 링크까지 갈 수 있습니다.";
+    } else if(total >= 17){
+      msg = "충분히 시작할 만합니다. 부족한 축을 채우려 하지 말고, <b>가장 작은 결과물</b>을 먼저 만들어 보세요.";
+    } else {
+      msg = "지금은 주제를 좁힐 때입니다. 문제를 겪는 사람을 <b>한 명만</b> 정하고, 그 사람의 하루를 따라가 보세요.";
+    }
+    $("#scoreMsg").innerHTML = msg;
+  }
+  [sx,sy,sz].forEach(function(el){ el.addEventListener("input", updateScore); });
+  updateScore();
+
+  /* ============================================================
+     5) 요구사항.md 템플릿 + 프롬프트 카드 (복사)
+     ============================================================ */
+  function bindCopy(btn, getText){
+    btn.addEventListener("click", function(){
+      var text = getText();
+      var label = btn.textContent;
+      var done = function(){
+        btn.textContent = "복사됨 ✓"; btn.classList.add("done");
+        setTimeout(function(){ btn.textContent = label; btn.classList.remove("done"); }, 1600);
+      };
+      var fallback = function(){
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try{ document.execCommand("copy"); done(); }catch(err){ btn.textContent = "복사 실패"; }
+        document.body.removeChild(ta);
+      };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+    });
+  }
+
+  $("#specTemplate").textContent = SPEC_TEMPLATE;
+  bindCopy($("#copySpec"), function(){ return SPEC_TEMPLATE; });
+
+  var pg = $("#promptGrid");
+  PROMPTS.forEach(function(p, i){
+    var card = document.createElement("div");
+    card.className = "code-card";
+    card.innerHTML = '<h4>' + esc(p.title) + '</h4><pre>' + esc(p.body) + '</pre>' +
+                     '<button class="copy-btn" type="button" data-i="' + i + '">복사하기</button>';
+    pg.appendChild(card);
+    bindCopy($(".copy-btn", card), function(){ return PROMPTS[i].body; });
+  });
+
+  /* ============================================================
+     6) 체크리스트 (localStorage)
+     ============================================================ */
+  var STORE_KEY = "civic-hack-checklist-v2";
+  var checklist = $("#checklist");
+  var store = {};
+  try{ store = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; }catch(err){ store = {}; }
+
+  CHECKS.forEach(function(grp, gi){
+    var g = document.createElement("div");
+    g.className = "check-group";
+    g.innerHTML = '<h4><i>' + (gi+1) + '</i>' + esc(grp.g.replace(/^\d+\.\s*/, "")) + '</h4>' +
+      grp.items.map(function(m, mi){
+        var id = "g" + gi + "-" + mi;
+        return '<label class="check"><input type="checkbox" data-id="' + id + '"' +
+               (store[id] ? " checked" : "") + ' /><span>' + esc(m) + '</span></label>';
+      }).join("");
+    checklist.appendChild(g);
+  });
+
+  var allChecks = $$('input[type=checkbox]', checklist);
+  function updateProgress(){
+    var done = allChecks.filter(function(c){ return c.checked; }).length;
+    var total = allChecks.length;
+    $("#progressText").textContent = done + " / " + total + " 완료";
+    $("#progressFill").style.width = (total ? (done/total*100) : 0) + "%";
+    var bar = $(".progress-bar");
+    bar.setAttribute("aria-valuenow", done);
+    bar.setAttribute("aria-valuemax", total);
+  }
+  function save(){
+    var data = {};
+    allChecks.forEach(function(c){ if(c.checked) data[c.dataset.id] = 1; });
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(data)); }catch(err){ /* 저장 불가 환경 무시 */ }
+  }
+  checklist.addEventListener("change", function(e){
+    if(e.target.type === "checkbox"){ save(); updateProgress(); }
+  });
+  $("#clearChecks").addEventListener("click", function(){
+    allChecks.forEach(function(c){ c.checked = false; });
+    save(); updateProgress();
+  });
+  updateProgress();
+
+  /* ============================================================
+     7) 진행표
+     ============================================================ */
+  $("#timelineList").innerHTML = SCHEDULE.map(function(it){
+    return '<div class="tl-item' + (it.mark ? " mark" : "") + '">' +
+      '<div class="tl-time">' + esc(it.time) + '<small>' + esc(it.tag) + '</small></div>' +
+      '<div class="tl-body"><b>' + esc(it.title) + '</b><p>' + esc(it.desc) + '</p></div>' +
+    '</div>';
+  }).join("");
+
+  /* ============================================================
+     8) 스크롤 등장 효과 · 맨 위로
+     ============================================================ */
+  if("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        // 앵커 이동으로 한 번에 지나쳐도(위로 밀려나도) 감춰진 채 남지 않게 한다
+        if(en.isIntersecting || en.boundingClientRect.top < 0){
+          en.target.classList.add("in");
+          io.unobserve(en.target);
+        }
+      });
+    }, {threshold:.08, rootMargin:"0px 0px -40px 0px"});
+    $$(".reveal").forEach(function(el){ io.observe(el); });
+  } else {
+    $$(".reveal").forEach(function(el){ el.classList.add("in"); });
+  }
+
+  var toTop = $("#toTop");
+  var ticking = false;
+  window.addEventListener("scroll", function(){
+    if(ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function(){
+      toTop.classList.toggle("show", window.scrollY > 600);
+      ticking = false;
+    });
+  }, {passive:true});
+  toTop.addEventListener("click", function(){ window.scrollTo({top:0, behavior:"smooth"}); });
+})();
+</script>
+</body>
+</html>

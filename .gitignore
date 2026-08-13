@@ -1,0 +1,11 @@
+# OS / 편집기 부산물
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/
+
+# 임시 파일
+~$*
+*.tmp
